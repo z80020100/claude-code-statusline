@@ -6,7 +6,12 @@
   "bin": {
     "claude-code-statusline": "bin/claude-code-statusline.js"
   },
-  "files": ["bin/", "lib/", "LICENSE", "README.md"],
+  "files": [
+    "bin/",
+    "lib/",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "check": "node test/measure-width.js --check",
     "lint": "npx eslint .",
