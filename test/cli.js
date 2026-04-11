@@ -135,6 +135,71 @@ test("setup --uninstall on empty settings reports no changes", () => {
   });
 });
 
+test("setup preserves existing settings keys", () => {
+  withTmpHome((tmp) => {
+    const dir = path.join(tmp, ".claude");
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, "settings.json"),
+      JSON.stringify({ existingKey: "value" }) + "\n",
+    );
+    run(["setup"], { env: { ...process.env, HOME: tmp } });
+    const settings = JSON.parse(
+      fs.readFileSync(path.join(dir, "settings.json"), "utf8"),
+    );
+    assert(settings.existingKey === "value", "existing key was lost");
+    assert(
+      settings.statusLine?.command === "claude-code-statusline",
+      "statusLine not added",
+    );
+  });
+});
+
+test("setup --uninstall preserves other settings keys", () => {
+  withTmpHome((tmp) => {
+    const env = { ...process.env, HOME: tmp };
+    const dir = path.join(tmp, ".claude");
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, "settings.json"),
+      JSON.stringify({
+        otherKey: 42,
+        statusLine: { type: "command", command: "claude-code-statusline" },
+      }) + "\n",
+    );
+    run(["setup", "--uninstall"], { env });
+    const settings = JSON.parse(
+      fs.readFileSync(path.join(dir, "settings.json"), "utf8"),
+    );
+    assert(!settings.statusLine, "statusLine should be removed");
+    assert(settings.otherKey === 42, "other key was lost");
+  });
+});
+
+test("setup does not overwrite different statusLine without confirmation", () => {
+  withTmpHome((tmp) => {
+    const dir = path.join(tmp, ".claude");
+    fs.mkdirSync(dir, { recursive: true });
+    const original = { statusLine: { type: "command", command: "other-tool" } };
+    fs.writeFileSync(
+      path.join(dir, "settings.json"),
+      JSON.stringify(original) + "\n",
+    );
+    const out = run(["setup"], { env: { ...process.env, HOME: tmp } });
+    assert(
+      out.includes("Current statusLine setting"),
+      "missing prompt message",
+    );
+    const settings = JSON.parse(
+      fs.readFileSync(path.join(dir, "settings.json"), "utf8"),
+    );
+    assert(
+      settings.statusLine.command === "other-tool",
+      "statusLine was overwritten without confirmation",
+    );
+  });
+});
+
 // ── summary ──────────────────────────────────────────
 
 console.log();
