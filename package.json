@@ -1,0 +1,43 @@
+{
+  "name": "@z80020100/claude-code-statusline",
+  "version": "0.1.0",
+  "description": "Custom status line for Claude Code — model info, context usage gradient bar, token stats, cost, git status, and rate limits",
+  "main": "lib/statusline.js",
+  "bin": {
+    "claude-code-statusline": "bin/claude-code-statusline.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "check": "node test/measure-width.js --check",
+    "lint": "npx eslint .",
+    "format:check": "npx prettier --check .",
+    "test": "npm run lint && npm run format:check && npm run check",
+    "postinstall": "node -e \"console.log('\\n  Run setup to configure Claude Code automatically:\\n    claude-code-statusline setup\\n')\"",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "claude-code",
+    "statusline",
+    "status-line",
+    "cli",
+    "terminal",
+    "ansi"
+  ],
+  "license": "MIT",
+  "author": "Cliff Wu <z800201002005@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/z80020100/claude-code-statusline.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
