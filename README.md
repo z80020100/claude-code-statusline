@@ -4,7 +4,7 @@
 
 Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — model info, context usage gradient bar, token stats, cost, git status, and rate limits.
 
-![Demo](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-demo.png)
+![Demo](assets/claude-code-statusline-demo.png)
 
 ## Features
 
@@ -50,7 +50,7 @@ claude-code-statusline setup --uninstall
 
 All fields at maximum width:
 
-![All fields](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-simulation.png)
+![All fields](assets/claude-code-statusline-simulation.png)
 
 The status line renders up to 6 lines — each constrained to 80 visible columns:
 

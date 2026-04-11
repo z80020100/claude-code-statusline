@@ -4,7 +4,7 @@
 
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 的自訂狀態列 — 顯示模型資訊、上下文使用量漸層條、Token 統計、費用、Git 狀態和速率限制。
 
-![Demo](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-demo.png)
+![Demo](assets/claude-code-statusline-demo.png)
 
 ## 功能
 
@@ -50,7 +50,7 @@ claude-code-statusline setup --uninstall
 
 所有欄位最大寬度的呈現：
 
-![所有欄位](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-simulation.png)
+![所有欄位](assets/claude-code-statusline-simulation.png)
 
 狀態列最多顯示 6 行 — 每行限制在 80 個可見字元內：
 
