@@ -47,7 +47,7 @@
     "url": "git+https://github.com/z80020100/claude-code-statusline.git"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "publishConfig": {
     "access": "public"

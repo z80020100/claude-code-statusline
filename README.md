@@ -88,8 +88,10 @@ Design decisions:
 
 ## Requirements
 
-- Node.js >= 18
-- Claude Code >= 2.1.80 (for `rate_limits` field)
+| Dependency  | Tier 1 (CI-tested)                  | Tier 2 (best-effort) |
+| ----------- | ----------------------------------- | -------------------- |
+| Node.js     | >= 20                               | 18                   |
+| Claude Code | >= 2.1.80 (for `rate_limits` field) |                      |
 
 ## Development
 
