@@ -17,6 +17,7 @@
     "fix": "npm run lint:fix && npm run format:fix",
     "test": "node test/measure-width.js --check && node test/cli.js",
     "simulate": "node test/measure-width.js",
+    "ci:local": "act push --container-architecture linux/amd64",
     "lint": "npm run lint:js && npm run lint:sh && npm run lint:yml",
     "lint:js": "npx --yes eslint .",
     "lint:sh": "shellcheck .githooks/pre-commit",

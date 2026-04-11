@@ -105,6 +105,7 @@ npm run fix                 # lint とフォーマットの問題を自動修正
 npm test                    # 幅チェック + CLI テストのみ
 npm run lint                # ESLint + shellcheck + actionlint
 npm run simulate            # worst-case ステータスラインを描画し幅レポートを表示
+npm run ci:local            # act で CI ワークフローをローカル実行（Docker が必要）
 ```
 
 ## ライセンス

@@ -105,6 +105,7 @@ npm run fix                 # 自動修正 lint 和格式問題
 npm test                    # 寬度檢查 + CLI 測試
 npm run lint                # ESLint + shellcheck + actionlint
 npm run simulate            # 渲染 worst-case 狀態列並顯示寬度報告
+npm run ci:local            # 透過 act 在本地執行 CI（需要 Docker）
 ```
 
 ## 授權

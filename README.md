@@ -105,6 +105,7 @@ npm run fix                 # auto-fix lint and format issues
 npm test                    # width check + CLI tests only
 npm run lint                # ESLint + shellcheck + actionlint
 npm run simulate            # render worst-case status line with width report
+npm run ci:local            # run CI workflow locally via act (requires Docker)
 ```
 
 ## License
