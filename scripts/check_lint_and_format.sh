@@ -43,12 +43,12 @@ if [ -n "$TARGET_JS" ] || [ -n "$TARGET_PRETTIER" ]; then
     fi
 fi
 
-# ── Statusline width check ───────────────────────────
-STATUSLINE="lib/statusline.js"
-if [[ "$TARGET_JS" == *"$STATUSLINE"* ]]; then
-    echo "check: statusline width"
-    if ! node test/measure-width.js --check; then
-        echo "check: statusline width failed"
+# ── Tests (width check + CLI tests) ──────────────────
+TEST_TRIGGER=$(list_files 'lib/*.js' 'bin/*.js' 'test/*.js' 'test/fixtures/*.json') || true
+if [ -n "$TEST_TRIGGER" ]; then
+    echo "check: tests (npm run check)"
+    if ! npm run --silent check; then
+        echo "check: tests failed"
         FAILED=1
     fi
 fi
