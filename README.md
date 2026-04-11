@@ -96,12 +96,12 @@ Design decisions:
 ```sh
 git clone https://github.com/z80020100/claude-code-statusline.git
 cd claude-code-statusline
-npm install
-./scripts/setup_hooks.sh   # enable pre-commit hooks
+npm install                 # also enables pre-commit hooks via prepare
 
-npm test                    # lint + format check + width check + CLI tests
-npm run check               # width check + CLI tests only
-npm run lint                # ESLint only
+npm run check               # lint + format check + width check + CLI tests
+npm run fix                 # auto-fix lint and format issues
+npm test                    # width check + CLI tests only
+npm run lint                # ESLint + shellcheck + actionlint
 npm run simulate            # render worst-case status line with width report
 ```
 

@@ -96,12 +96,12 @@ Claude Code は各レンダリングサイクルで stdin を通じて `statusLi
 ```sh
 git clone https://github.com/z80020100/claude-code-statusline.git
 cd claude-code-statusline
-npm install
-./scripts/setup_hooks.sh   # pre-commit hooks を有効化
+npm install                 # prepare で pre-commit hooks も自動有効化
 
-npm test                    # lint + フォーマットチェック + 幅チェック + CLI テスト
-npm run check               # 幅チェック + CLI テストのみ
-npm run lint                # ESLint のみ
+npm run check               # lint + フォーマットチェック + 幅チェック + CLI テスト
+npm run fix                 # lint とフォーマットの問題を自動修正
+npm test                    # 幅チェック + CLI テストのみ
+npm run lint                # ESLint + shellcheck + actionlint
 npm run simulate            # worst-case ステータスラインを描画し幅レポートを表示
 ```
 
