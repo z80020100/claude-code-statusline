@@ -1,0 +1,29 @@
+{
+  "model": { "display_name": "Opus 4.6 (1M context)" },
+  "context_window": {
+    "used_percentage": 100,
+    "total_input_tokens": 999949,
+    "total_output_tokens": 999949,
+    "current_usage": {
+      "input_tokens": 0,
+      "cache_read_input_tokens": 204800,
+      "cache_creation_input_tokens": 0
+    },
+    "context_window_size": 204800
+  },
+  "cost": {
+    "total_cost_usd": 999.99,
+    "total_lines_added": 99999,
+    "total_lines_removed": 99999,
+    "total_duration_ms": 359999000,
+    "total_api_duration_ms": 359999000
+  },
+  "exceeds_200k_tokens": true,
+  "workspace": {
+    "project_dir": "/Users/username/git/github.com/organization/project-name",
+    "current_dir": "/Users/username/git/github.com/organization/project-name/src"
+  },
+  "version": "2.100.0",
+  "session_name": "session-name",
+  "session_id": "550e8400-e29b-41d4-a716-446655440000"
+}
