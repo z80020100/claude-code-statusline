@@ -48,6 +48,15 @@ function withTmpHome(fn) {
   }
 }
 
+function seedSettings(tmp, data) {
+  const dir = path.join(tmp, ".claude");
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, "settings.json"),
+    JSON.stringify(data) + "\n",
+  );
+}
+
 // ── --version ────────────────────────────────────────
 
 test("--version prints package version", () => {
@@ -137,15 +146,11 @@ test("setup --uninstall on empty settings reports no changes", () => {
 
 test("setup preserves existing settings keys", () => {
   withTmpHome((tmp) => {
-    const dir = path.join(tmp, ".claude");
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(
-      path.join(dir, "settings.json"),
-      JSON.stringify({ existingKey: "value" }) + "\n",
-    );
-    run(["setup"], { env: { ...process.env, HOME: tmp } });
+    seedSettings(tmp, { existingKey: "value" });
+    const env = { ...process.env, HOME: tmp };
+    run(["setup"], { env });
     const settings = JSON.parse(
-      fs.readFileSync(path.join(dir, "settings.json"), "utf8"),
+      fs.readFileSync(path.join(tmp, ".claude", "settings.json"), "utf8"),
     );
     assert(settings.existingKey === "value", "existing key was lost");
     assert(
@@ -157,19 +162,14 @@ test("setup preserves existing settings keys", () => {
 
 test("setup --uninstall preserves other settings keys", () => {
   withTmpHome((tmp) => {
+    seedSettings(tmp, {
+      otherKey: 42,
+      statusLine: { type: "command", command: "claude-code-statusline" },
+    });
     const env = { ...process.env, HOME: tmp };
-    const dir = path.join(tmp, ".claude");
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(
-      path.join(dir, "settings.json"),
-      JSON.stringify({
-        otherKey: 42,
-        statusLine: { type: "command", command: "claude-code-statusline" },
-      }) + "\n",
-    );
     run(["setup", "--uninstall"], { env });
     const settings = JSON.parse(
-      fs.readFileSync(path.join(dir, "settings.json"), "utf8"),
+      fs.readFileSync(path.join(tmp, ".claude", "settings.json"), "utf8"),
     );
     assert(!settings.statusLine, "statusLine should be removed");
     assert(settings.otherKey === 42, "other key was lost");
@@ -178,20 +178,17 @@ test("setup --uninstall preserves other settings keys", () => {
 
 test("setup does not overwrite different statusLine without confirmation", () => {
   withTmpHome((tmp) => {
-    const dir = path.join(tmp, ".claude");
-    fs.mkdirSync(dir, { recursive: true });
-    const original = { statusLine: { type: "command", command: "other-tool" } };
-    fs.writeFileSync(
-      path.join(dir, "settings.json"),
-      JSON.stringify(original) + "\n",
-    );
-    const out = run(["setup"], { env: { ...process.env, HOME: tmp } });
+    seedSettings(tmp, {
+      statusLine: { type: "command", command: "other-tool" },
+    });
+    const env = { ...process.env, HOME: tmp };
+    const out = run(["setup"], { env });
     assert(
       out.includes("Current statusLine setting"),
       "missing prompt message",
     );
     const settings = JSON.parse(
-      fs.readFileSync(path.join(dir, "settings.json"), "utf8"),
+      fs.readFileSync(path.join(tmp, ".claude", "settings.json"), "utf8"),
     );
     assert(
       settings.statusLine.command === "other-tool",
