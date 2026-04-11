@@ -102,6 +102,7 @@ npm install
 npm test                    # lint + format check + width check + CLI tests
 npm run check               # width check + CLI tests only
 npm run lint                # ESLint only
+npm run simulate            # render worst-case status line with width report
 ```
 
 ## License

@@ -13,6 +13,7 @@
     "README.md"
   ],
   "scripts": {
+    "simulate": "node test/measure-width.js",
     "check": "node test/measure-width.js --check && node test/cli.js",
     "lint": "npx eslint .",
     "format:check": "npx prettier --check .",

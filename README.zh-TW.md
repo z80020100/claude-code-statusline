@@ -102,6 +102,7 @@ npm install
 npm test                    # lint + 格式檢查 + 寬度檢查 + CLI 測試
 npm run check               # 寬度檢查 + CLI 測試
 npm run lint                # 僅 ESLint
+npm run simulate            # 渲染 worst-case 狀態列並顯示寬度報告
 ```
 
 ## 授權
