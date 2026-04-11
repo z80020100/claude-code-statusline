@@ -34,7 +34,7 @@ if [ -n "$TARGET_JS" ] || [ -n "$TARGET_PRETTIER" ]; then
 fi
 
 # ── Shell: shfmt ──────────────────────────────────────
-TARGET_SH=$(list_files '*.sh') || true
+TARGET_SH=$(list_files '*.sh' '.githooks/*') || true
 
 if [ -n "$TARGET_SH" ]; then
     if require_cmd shfmt "brew install shfmt"; then

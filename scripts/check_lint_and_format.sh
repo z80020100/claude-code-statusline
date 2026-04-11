@@ -44,7 +44,7 @@ if [ -n "$TARGET_JS" ] || [ -n "$TARGET_PRETTIER" ]; then
 fi
 
 # ── Tests (width check + CLI tests) ──────────────────
-TEST_TRIGGER=$(list_files 'lib/*.js' 'bin/*.js' 'test/*.js' 'test/fixtures/*.json') || true
+TEST_TRIGGER=$(list_files 'lib/*.js' 'bin/*.js' 'test/*.js' 'test/fixtures/*.json' 'package.json') || true
 if [ -n "$TEST_TRIGGER" ]; then
     echo "check: tests (npm run check)"
     if ! npm run --silent check; then
@@ -54,7 +54,7 @@ if [ -n "$TEST_TRIGGER" ]; then
 fi
 
 # ── Shell: shellcheck + shfmt ─────────────────────────
-TARGET_SH=$(list_files '*.sh') || true
+TARGET_SH=$(list_files '*.sh' '.githooks/*') || true
 
 if [ -n "$TARGET_SH" ]; then
     if require_cmd shellcheck "brew install shellcheck"; then
