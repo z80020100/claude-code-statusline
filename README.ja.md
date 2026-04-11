@@ -102,6 +102,7 @@ npm install
 npm test                    # lint + フォーマットチェック + 幅チェック + CLI テスト
 npm run check               # 幅チェック + CLI テストのみ
 npm run lint                # ESLint のみ
+npm run simulate            # worst-case ステータスラインを描画し幅レポートを表示
 ```
 
 ## ライセンス
