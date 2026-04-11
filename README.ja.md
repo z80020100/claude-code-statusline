@@ -4,7 +4,7 @@
 
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 用カスタムステータスライン — モデル情報、コンテキスト使用量グラデーションバー、トークン統計、コスト、Git ステータス、レート制限を表示します。
 
-![Demo](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-demo.png)
+![Demo](assets/claude-code-statusline-demo.png)
 
 ## 機能
 
@@ -50,7 +50,7 @@ claude-code-statusline setup --uninstall
 
 全フィールドを最大幅で表示した場合：
 
-![全フィールド](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-simulation.png)
+![全フィールド](assets/claude-code-statusline-simulation.png)
 
 ステータスラインは最大6行で表示されます — 各行は80文字以内に制限されます：
 
