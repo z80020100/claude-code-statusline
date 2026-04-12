@@ -1,5 +1,7 @@
 # claude-code-statusline
 
+[![Node.js](https://img.shields.io/badge/Node.js-≥20-green)](https://nodejs.org/) [![npm](https://img.shields.io/npm/v/@z80020100/claude-code-statusline)](https://www.npmjs.com/package/@z80020100/claude-code-statusline)
+
 [English](README.md) | [繁體中文](README.zh-TW.md) | [日本語](README.ja.md)
 
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 用カスタムステータスライン — モデル情報、コンテキスト使用量グラデーションバー、トークン統計、コスト、Git ステータス、レート制限を表示します。
