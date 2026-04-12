@@ -1,8 +1,7 @@
 #!/bin/bash
-# Pre-commit hook: runs lint and format checks on staged files.
+# Pre-commit hook: runs the same checks as CI.
 # Activated by: git config core.hooksPath .githooks
 
 set -euo pipefail
 
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-exec "$REPO_ROOT/scripts/check_lint_and_format.sh" --staged
+exec npm run check
