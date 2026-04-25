@@ -1,6 +1,7 @@
 ---
 description: Configure or remove claude-code-statusline in ~/.claude/settings.json
 argument-hint: [--uninstall]
+allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/bin/claude-code-statusline.js":*)
 ---
 
 If `$ARGUMENTS` is empty, run this command exactly:

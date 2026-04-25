@@ -1,6 +1,7 @@
 ---
 description: Switch claude-code-statusline icon mode or show current mode
 argument-hint: [unicode|nerd]
+allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/bin/claude-code-statusline.js":*)
 ---
 
 Run this command exactly:
