@@ -208,6 +208,139 @@ test("setup does not overwrite different statusLine without confirmation", () =>
   });
 });
 
+test("setup --command writes custom statusLine command", () => {
+  withTmpHome((tmp) => {
+    run(["setup", "--command", "node /custom/path"], {
+      env: { ...process.env, HOME: tmp },
+    });
+    const settings = JSON.parse(
+      fs.readFileSync(path.join(tmp, ".claude", "settings.json"), "utf8"),
+    );
+    assert(
+      settings.statusLine?.command === "node /custom/path",
+      "statusLine.command not set to custom value",
+    );
+    assert(settings.statusLine?.type === "command", "statusLine.type not set");
+  });
+});
+
+test("setup --command reports already configured for same custom command", () => {
+  withTmpHome((tmp) => {
+    const env = { ...process.env, HOME: tmp };
+    run(["setup", "--command", "custom"], { env });
+    assert(
+      run(["setup", "--command", "custom"], { env }).includes(
+        "Already configured",
+      ),
+      "missing already-configured message",
+    );
+  });
+});
+
+test("setup --command suppresses Nerd Font icons hint", () => {
+  withTmpHome((tmp) => {
+    const out = run(["setup", "--command", "custom"], {
+      env: { ...process.env, HOME: tmp },
+    });
+    assert(
+      !out.includes("claude-code-statusline icons nerd"),
+      "icons hint should be suppressed for custom command",
+    );
+  });
+});
+
+test("setup --command without value exits with error", () => {
+  withTmpHome((tmp) => {
+    try {
+      run(["setup", "--command"], {
+        env: { ...process.env, HOME: tmp },
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+      throw new Error("expected command to fail");
+    } catch (err) {
+      assert(err.status === 1, "expected exit code 1");
+      assert(
+        err.stderr.includes("--command requires a value"),
+        "missing --command requires a value message",
+      );
+    }
+  });
+});
+
+test("setup --command rejects value starting with --", () => {
+  withTmpHome((tmp) => {
+    try {
+      run(["setup", "--command", "--some-typo"], {
+        env: { ...process.env, HOME: tmp },
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+      throw new Error("expected command to fail");
+    } catch (err) {
+      assert(err.status === 1, "expected exit code 1");
+      assert(
+        err.stderr.includes("--command requires a value"),
+        "missing --command requires a value message",
+      );
+    }
+  });
+});
+
+test("setup rejects --command combined with --uninstall (preserves statusLine)", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, {
+      statusLine: { type: "command", command: "existing" },
+    });
+    try {
+      run(["setup", "--command", "custom", "--uninstall"], {
+        env: { ...process.env, HOME: tmp },
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+      throw new Error("expected command to fail");
+    } catch (err) {
+      assert(err.status === 1, "expected exit code 1");
+      assert(
+        err.stderr.includes("--command and --uninstall cannot be combined"),
+        "missing combination error",
+      );
+    }
+    const settings = JSON.parse(
+      fs.readFileSync(path.join(tmp, ".claude", "settings.json"), "utf8"),
+    );
+    assert(
+      settings.statusLine?.command === "existing",
+      "existing statusLine should not be deleted",
+    );
+  });
+});
+
+test("setup rejects --uninstall combined with --command (preserves statusLine)", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, {
+      statusLine: { type: "command", command: "existing" },
+    });
+    try {
+      run(["setup", "--uninstall", "--command", "custom"], {
+        env: { ...process.env, HOME: tmp },
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+      throw new Error("expected command to fail");
+    } catch (err) {
+      assert(err.status === 1, "expected exit code 1");
+      assert(
+        err.stderr.includes("--command and --uninstall cannot be combined"),
+        "missing combination error",
+      );
+    }
+    const settings = JSON.parse(
+      fs.readFileSync(path.join(tmp, ".claude", "settings.json"), "utf8"),
+    );
+    assert(
+      settings.statusLine?.command === "existing",
+      "existing statusLine should not be deleted",
+    );
+  });
+});
+
 // ── icons resolution ─────────────────────────────────
 // The clock icon renders unconditionally in every output, so it is a
 // stable probe for which icon set was selected.
