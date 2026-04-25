@@ -1,6 +1,7 @@
 #!/bin/bash
-# Pre-commit hook: runs the same checks as CI.
+# Pre-commit hook: runs lint and format on staged files only.
+# CI runs the full `npm run check` suite including tests.
 
 set -euo pipefail
 
-exec npm run check
+exec npx lint-staged

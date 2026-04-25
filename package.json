@@ -56,6 +56,19 @@
   "devDependencies": {
     "eslint": "^10.2.1",
     "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.8.3"
+  },
+  "lint-staged": {
+    "*.{js,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": "prettier --write",
+    ".github/workflows/*.yml": "actionlint",
+    ".husky/pre-commit": [
+      "shellcheck",
+      "shfmt -i 4 -w"
+    ]
   }
 }
