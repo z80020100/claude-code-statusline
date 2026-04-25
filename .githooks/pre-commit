@@ -1,7 +1,0 @@
-#!/bin/bash
-# Pre-commit hook: runs the same checks as CI.
-# Activated by: git config core.hooksPath .githooks
-
-set -euo pipefail
-
-exec npm run check

@@ -109,6 +109,8 @@ Claude Code は各レンダリングサイクルで stdin を通じて `statusLi
 
 ## 開発
 
+開発ツール（ESLint 10、lint-staged 16）は Node >= 20.19 が必要です。`.nvmrc` を参照してください。
+
 ```sh
 git clone https://github.com/z80020100/claude-code-statusline.git
 cd claude-code-statusline

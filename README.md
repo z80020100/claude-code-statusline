@@ -109,6 +109,8 @@ Design decisions:
 
 ## Development
 
+Dev tooling (ESLint 10, lint-staged 16) requires Node >= 20.19. See `.nvmrc`.
+
 ```sh
 git clone https://github.com/z80020100/claude-code-statusline.git
 cd claude-code-statusline

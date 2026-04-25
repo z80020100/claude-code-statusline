@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+# Pre-commit hook: runs lint and format on staged files only.
+# CI runs the full `npm run check` suite including tests.
+# Husky v9 invokes this via `sh -e`, so it must stay POSIX-compatible.
+
+set -eu
+
+exec npx lint-staged
