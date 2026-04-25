@@ -21,17 +21,16 @@
 
 ## インストール
 
+二つの等価なインストール方法 — どちらかを選んでください。両方とも `statusLine` 設定を `~/.claude/settings.json` に書き込みます。
+
+### 方法 A — npm
+
 ```sh
 npm install -g @z80020100/claude-code-statusline
-```
-
-## セットアップ
-
-```sh
 claude-code-statusline setup
 ```
 
-`~/.claude/settings.json` に `statusLine` 設定を書き込みます：
+書き込まれる `command` は `claude-code-statusline`（PATH に依存）：
 
 ```json
 {
@@ -48,9 +47,30 @@ claude-code-statusline setup
 claude-code-statusline setup --uninstall
 ```
 
+### 方法 B — Claude Code plugin
+
+```sh
+claude plugin marketplace add z80020100/claude-code-statusline
+claude plugin install claude-code-statusline@claude-code-statusline
+```
+
+スラッシュコマンドが書き込む構造は同じです。`command` だけがプラグインのインストール先を指す絶対パス（例: `node "$CLAUDE_PLUGIN_ROOT/bin/..."`）となります。Claude Code 内で実行してください：
+
+```
+/claude-code-statusline:setup
+```
+
+設定を削除する場合：
+
+```
+/claude-code-statusline:setup --uninstall
+```
+
 ## アイコンモード
 
 アイコンは互換性重視のためデフォルトでプレーンな Unicode 記号を使用します。
+
+CLI（方法 A）：
 
 ```sh
 claude-code-statusline icons          # 現在のモードを表示
@@ -58,7 +78,15 @@ claude-code-statusline icons nerd     # Nerd Font アイコンを使用
 claude-code-statusline icons unicode  # Unicode アイコンを使用
 ```
 
-これは `~/.claude/claude-code-statusline.json` に書き込みます。`CLAUDE_STATUSLINE_ICONS` を設定している場合は環境変数が優先されます。
+プラグインのスラッシュコマンド（方法 B、同等）：
+
+```
+/claude-code-statusline:icons
+/claude-code-statusline:icons nerd
+/claude-code-statusline:icons unicode
+```
+
+両方とも `~/.claude/claude-code-statusline.json` に書き込みます。`CLAUDE_STATUSLINE_ICONS` を設定している場合は環境変数が優先されます。
 
 ## 表示レイアウト
 

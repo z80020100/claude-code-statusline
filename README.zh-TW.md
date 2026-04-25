@@ -21,17 +21,16 @@
 
 ## 安裝
 
+兩種等效的安裝方式 — 擇一即可。兩者皆會將 `statusLine` 設定寫入 `~/.claude/settings.json`。
+
+### 方式 A — npm
+
 ```sh
 npm install -g @z80020100/claude-code-statusline
-```
-
-## 設定
-
-```sh
 claude-code-statusline setup
 ```
 
-這會將 `statusLine` 寫入 `~/.claude/settings.json`：
+寫入的 `command` 為 `claude-code-statusline`（依靠 PATH 解析）：
 
 ```json
 {
@@ -48,9 +47,30 @@ claude-code-statusline setup
 claude-code-statusline setup --uninstall
 ```
 
+### 方式 B — Claude Code plugin
+
+```sh
+claude plugin marketplace add z80020100/claude-code-statusline
+claude plugin install claude-code-statusline@claude-code-statusline
+```
+
+slash command 寫入的結構相同。差別僅在 `command` 是指向 plugin 安裝位置的絕對路徑（例如 `node "$CLAUDE_PLUGIN_ROOT/bin/..."`）。請在 Claude Code 內執行：
+
+```
+/claude-code-statusline:setup
+```
+
+移除設定：
+
+```
+/claude-code-statusline:setup --uninstall
+```
+
 ## 圖示模式
 
 圖示預設使用相容性最佳的純 Unicode 符號。
+
+CLI（方式 A）：
 
 ```sh
 claude-code-statusline icons          # 顯示目前模式
@@ -58,7 +78,15 @@ claude-code-statusline icons nerd     # 使用 Nerd Font 圖示
 claude-code-statusline icons unicode  # 使用 Unicode 圖示
 ```
 
-這會寫入 `~/.claude/claude-code-statusline.json`。設定 `CLAUDE_STATUSLINE_ICONS` 時仍會優先採用環境變數。
+Plugin slash command（方式 B、等效）：
+
+```
+/claude-code-statusline:icons
+/claude-code-statusline:icons nerd
+/claude-code-statusline:icons unicode
+```
+
+兩者皆寫入 `~/.claude/claude-code-statusline.json`。設定 `CLAUDE_STATUSLINE_ICONS` 時仍會優先採用環境變數。
 
 ## 顯示配置
 
