@@ -197,6 +197,108 @@ test("setup does not overwrite different statusLine without confirmation", () =>
   });
 });
 
+// ── icons resolution ─────────────────────────────────
+// The clock icon renders unconditionally in every output, so it is a
+// stable probe for which icon set was selected.
+
+const NERD_CLOCK = "\uf017";
+const UNICODE_CLOCK = "\u25F7";
+const RENDER_INPUT = JSON.stringify({ model: { display_name: "T" } });
+
+function cleanEnv(extra) {
+  const env = { ...process.env };
+  delete env.CLAUDE_STATUSLINE_ICONS;
+  return { ...env, ...extra };
+}
+
+function seedConfig(tmp, data) {
+  const dir = path.join(tmp, ".claude");
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, "claude-code-statusline.json"),
+    JSON.stringify(data) + "\n",
+  );
+}
+
+test("icons defaults to unicode when nothing is configured", () => {
+  withTmpHome((tmp) => {
+    const out = run([], {
+      input: RENDER_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(out.includes(UNICODE_CLOCK), "expected unicode clock");
+    assert(!out.includes(NERD_CLOCK), "unexpected nerd clock");
+  });
+});
+
+test("icons honors process.env.CLAUDE_STATUSLINE_ICONS", () => {
+  withTmpHome((tmp) => {
+    const out = run([], {
+      input: RENDER_INPUT,
+      env: cleanEnv({ HOME: tmp, CLAUDE_STATUSLINE_ICONS: "nerd" }),
+    });
+    assert(out.includes(NERD_CLOCK), "expected nerd clock");
+  });
+});
+
+test("icons honors settings.env.CLAUDE_STATUSLINE_ICONS", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, { env: { CLAUDE_STATUSLINE_ICONS: "nerd" } });
+    const out = run([], {
+      input: RENDER_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(out.includes(NERD_CLOCK), "expected nerd clock");
+  });
+});
+
+test("icons honors claude-code-statusline.json", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { icons: "nerd" });
+    const out = run([], {
+      input: RENDER_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(out.includes(NERD_CLOCK), "expected nerd clock");
+  });
+});
+
+test("icons settings.env beats config file", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, { env: { CLAUDE_STATUSLINE_ICONS: "nerd" } });
+    seedConfig(tmp, { icons: "unicode" });
+    const out = run([], {
+      input: RENDER_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(out.includes(NERD_CLOCK), "expected nerd clock");
+  });
+});
+
+test("icons process.env beats settings.env and config", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, { env: { CLAUDE_STATUSLINE_ICONS: "unicode" } });
+    seedConfig(tmp, { icons: "unicode" });
+    const out = run([], {
+      input: RENDER_INPUT,
+      env: cleanEnv({ HOME: tmp, CLAUDE_STATUSLINE_ICONS: "nerd" }),
+    });
+    assert(out.includes(NERD_CLOCK), "expected nerd clock");
+  });
+});
+
+test("icons invalid value falls back to unicode default", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { icons: "bogus" });
+    const out = run([], {
+      input: RENDER_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(out.includes(UNICODE_CLOCK), "expected unicode clock");
+    assert(!out.includes(NERD_CLOCK), "unexpected nerd clock");
+  });
+});
+
 // ── summary ──────────────────────────────────────────
 
 console.log();
