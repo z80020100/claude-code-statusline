@@ -19,15 +19,15 @@
     "simulate": "node test/measure-width.js",
     "ci:local": "act push --container-architecture linux/amd64",
     "lint": "npm run lint:js && npm run lint:sh && npm run lint:yml",
-    "lint:js": "npx --yes eslint .",
+    "lint:js": "eslint .",
     "lint:sh": "shellcheck .githooks/pre-commit",
     "lint:yml": "actionlint .github/workflows/*.yml",
-    "lint:fix": "npx --yes eslint --fix .",
+    "lint:fix": "eslint --fix .",
     "format:check": "npm run format:check:js && npm run format:check:sh",
-    "format:check:js": "npx --yes prettier --check .",
+    "format:check:js": "prettier --check .",
     "format:check:sh": "shfmt -i 4 -d .githooks/pre-commit",
     "format:fix": "npm run format:fix:js && npm run format:fix:sh",
-    "format:fix:js": "npx --yes prettier --write .",
+    "format:fix:js": "prettier --write .",
     "format:fix:sh": "shfmt -i 4 -w .githooks/pre-commit",
     "prepare": "git config --local core.hooksPath .githooks",
     "postinstall": "node -e \"console.log('\\n  Run setup to configure Claude Code automatically:\\n    claude-code-statusline setup\\n')\"",
@@ -52,5 +52,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "eslint": "^10.2.1",
+    "prettier": "^3.8.3"
   }
 }

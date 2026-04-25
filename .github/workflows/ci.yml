@@ -19,4 +19,5 @@ jobs:
           go install mvdan.cc/sh/v3/cmd/shfmt@latest
           go install github.com/rhysd/actionlint/cmd/actionlint@latest
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - run: npm ci
       - run: npm run check
