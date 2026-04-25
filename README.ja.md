@@ -48,6 +48,18 @@ claude-code-statusline setup
 claude-code-statusline setup --uninstall
 ```
 
+## アイコンモード
+
+アイコンは互換性重視のためデフォルトでプレーンな Unicode 記号を使用します。
+
+```sh
+claude-code-statusline icons          # 現在のモードを表示
+claude-code-statusline icons nerd     # Nerd Font アイコンを使用
+claude-code-statusline icons unicode  # Unicode アイコンを使用
+```
+
+これは `~/.claude/claude-code-statusline.json` に書き込みます。`CLAUDE_STATUSLINE_ICONS` を設定している場合は環境変数が優先されます。
+
 ## 表示レイアウト
 
 全フィールドを最大幅で表示した場合：
@@ -107,6 +119,7 @@ npm run fix                 # lint とフォーマットの問題を自動修正
 npm test                    # 幅チェック + CLI テストのみ
 npm run lint                # ESLint + shellcheck + actionlint
 npm run simulate            # worst-case ステータスラインを描画し幅レポートを表示
+CLAUDE_STATUSLINE_ICONS=nerd npm run simulate  # Nerd Font グリフで描画
 npm run ci:local            # act で CI ワークフローをローカル実行（Docker が必要）
 ```
 

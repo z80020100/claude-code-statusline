@@ -48,6 +48,18 @@ To remove:
 claude-code-statusline setup --uninstall
 ```
 
+## Icon Mode
+
+Icons default to plain Unicode symbols for broad terminal compatibility.
+
+```sh
+claude-code-statusline icons          # show current mode
+claude-code-statusline icons nerd     # use Nerd Font icons
+claude-code-statusline icons unicode  # use Unicode icons
+```
+
+This writes `~/.claude/claude-code-statusline.json`. `CLAUDE_STATUSLINE_ICONS` still takes precedence when set.
+
 ## Display Layout
 
 All fields at maximum width:
@@ -107,6 +119,7 @@ npm run fix                 # auto-fix lint and format issues
 npm test                    # width check + CLI tests only
 npm run lint                # ESLint + shellcheck + actionlint
 npm run simulate            # render worst-case status line with width report
+CLAUDE_STATUSLINE_ICONS=nerd npm run simulate  # render with Nerd Font glyphs
 npm run ci:local            # run CI workflow locally via act (requires Docker)
 ```
 

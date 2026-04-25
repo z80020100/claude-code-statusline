@@ -48,6 +48,18 @@ claude-code-statusline setup
 claude-code-statusline setup --uninstall
 ```
 
+## 圖示模式
+
+圖示預設使用相容性最佳的純 Unicode 符號。
+
+```sh
+claude-code-statusline icons          # 顯示目前模式
+claude-code-statusline icons nerd     # 使用 Nerd Font 圖示
+claude-code-statusline icons unicode  # 使用 Unicode 圖示
+```
+
+這會寫入 `~/.claude/claude-code-statusline.json`。設定 `CLAUDE_STATUSLINE_ICONS` 時仍會優先採用環境變數。
+
 ## 顯示配置
 
 所有欄位最大寬度的呈現：
@@ -107,6 +119,7 @@ npm run fix                 # 自動修正 lint 和格式問題
 npm test                    # 寬度檢查 + CLI 測試
 npm run lint                # ESLint + shellcheck + actionlint
 npm run simulate            # 渲染 worst-case 狀態列並顯示寬度報告
+CLAUDE_STATUSLINE_ICONS=nerd npm run simulate  # 以 Nerd Font 字符渲染
 npm run ci:local            # 透過 act 在本地執行 CI（需要 Docker）
 ```
 
