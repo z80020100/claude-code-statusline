@@ -74,6 +74,7 @@ test("--help prints complete help output", () => {
   assert(out.includes(`${PKG.name} v${PKG.version}`), "missing name/version");
   assert(out.includes(PKG.description), "missing description");
   assert(out.includes("Usage:"), "missing Usage:");
+  assert(out.includes("claude-code-statusline icons"), "missing icons command");
   assert(out.includes(PKG.author), "missing author");
   assert(out.includes(PKG.license), "missing license");
 });
@@ -117,6 +118,16 @@ test("setup reports already configured on second run", () => {
     assert(
       run(["setup"], { env }).includes("Already configured"),
       "missing already-configured message",
+    );
+  });
+});
+
+test("setup prints Nerd Font icons hint", () => {
+  withTmpHome((tmp) => {
+    const out = run(["setup"], { env: { ...process.env, HOME: tmp } });
+    assert(
+      out.includes("claude-code-statusline icons nerd"),
+      "missing icons hint",
     );
   });
 });

@@ -20,6 +20,9 @@ Usage:
   claude-code-statusline                    Read JSON from stdin and render status line
   claude-code-statusline setup              Configure Claude Code to use this status line
   claude-code-statusline setup --uninstall  Remove status line configuration
+  claude-code-statusline icons              Show current icon mode
+  claude-code-statusline icons unicode      Use Unicode icons
+  claude-code-statusline icons nerd         Use Nerd Font icons
   claude-code-statusline --help             Show this help message
   claude-code-statusline --version          Show version
 

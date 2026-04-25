@@ -48,6 +48,18 @@ claude-code-statusline setup
 claude-code-statusline setup --uninstall
 ```
 
+## アイコンモード
+
+アイコンは互換性重視のためデフォルトでプレーンな Unicode 記号を使用します。
+
+```sh
+claude-code-statusline icons          # 現在のモードを表示
+claude-code-statusline icons nerd     # Nerd Font アイコンを使用
+claude-code-statusline icons unicode  # Unicode アイコンを使用
+```
+
+これは `~/.claude/claude-code-statusline.json` に書き込みます。`CLAUDE_STATUSLINE_ICONS` を設定している場合は環境変数が優先されます。
+
 ## 表示レイアウト
 
 全フィールドを最大幅で表示した場合：
@@ -94,8 +106,6 @@ Claude Code は各レンダリングサイクルで stdin を通じて `statusLi
 | ----------- | ------------------------------------------- | --------------------- |
 | Node.js     | >= 20                                       | 18                    |
 | Claude Code | >= 2.1.80（`rate_limits` フィールドが必要） |                       |
-
-アイコンは互換性重視のためデフォルトでプレーンな Unicode 記号を使用します。ターミナルフォントが [Nerd Font](https://www.nerdfonts.com/) パッチ済みの場合は `CLAUDE_STATUSLINE_ICONS=nerd` を設定するとリッチなグリフに切り替わります。
 
 ## 開発
 

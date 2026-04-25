@@ -48,6 +48,18 @@ To remove:
 claude-code-statusline setup --uninstall
 ```
 
+## Icon Mode
+
+Icons default to plain Unicode symbols for broad terminal compatibility.
+
+```sh
+claude-code-statusline icons          # show current mode
+claude-code-statusline icons nerd     # use Nerd Font icons
+claude-code-statusline icons unicode  # use Unicode icons
+```
+
+This writes `~/.claude/claude-code-statusline.json`. `CLAUDE_STATUSLINE_ICONS` still takes precedence when set.
+
 ## Display Layout
 
 All fields at maximum width:
@@ -94,8 +106,6 @@ Design decisions:
 | ----------- | ----------------------------------- | -------------------- |
 | Node.js     | >= 20                               | 18                   |
 | Claude Code | >= 2.1.80 (for `rate_limits` field) |                      |
-
-Icons default to plain Unicode symbols for broad terminal compatibility. If your terminal uses a [Nerd Font](https://www.nerdfonts.com/) variant set `CLAUDE_STATUSLINE_ICONS=nerd` for richer glyphs.
 
 ## Development
 
