@@ -95,6 +95,8 @@ Claude Code は各レンダリングサイクルで stdin を通じて `statusLi
 | Node.js     | >= 20                                       | 18                    |
 | Claude Code | >= 2.1.80（`rate_limits` フィールドが必要） |                       |
 
+アイコンは互換性重視のためデフォルトでプレーンな Unicode 記号を使用します。ターミナルフォントが [Nerd Font](https://www.nerdfonts.com/) パッチ済みの場合は `CLAUDE_STATUSLINE_ICONS=nerd` を設定するとリッチなグリフに切り替わります。
+
 ## 開発
 
 ```sh
@@ -107,6 +109,7 @@ npm run fix                 # lint とフォーマットの問題を自動修正
 npm test                    # 幅チェック + CLI テストのみ
 npm run lint                # ESLint + shellcheck + actionlint
 npm run simulate            # worst-case ステータスラインを描画し幅レポートを表示
+CLAUDE_STATUSLINE_ICONS=nerd npm run simulate  # Nerd Font グリフで描画
 npm run ci:local            # act で CI ワークフローをローカル実行（Docker が必要）
 ```
 

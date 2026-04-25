@@ -95,6 +95,8 @@ Design decisions:
 | Node.js     | >= 20                               | 18                   |
 | Claude Code | >= 2.1.80 (for `rate_limits` field) |                      |
 
+Icons default to plain Unicode symbols for broad terminal compatibility. If your terminal uses a [Nerd Font](https://www.nerdfonts.com/) variant set `CLAUDE_STATUSLINE_ICONS=nerd` for richer glyphs.
+
 ## Development
 
 ```sh
@@ -107,6 +109,7 @@ npm run fix                 # auto-fix lint and format issues
 npm test                    # width check + CLI tests only
 npm run lint                # ESLint + shellcheck + actionlint
 npm run simulate            # render worst-case status line with width report
+CLAUDE_STATUSLINE_ICONS=nerd npm run simulate  # render with Nerd Font glyphs
 npm run ci:local            # run CI workflow locally via act (requires Docker)
 ```
 
