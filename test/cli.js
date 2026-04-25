@@ -341,6 +341,40 @@ test("setup rejects --uninstall combined with --command (preserves statusLine)",
   });
 });
 
+test("setup treats statusLine with missing type as different", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, {
+      statusLine: { command: "claude-code-statusline" },
+    });
+    const out = run(["setup"], { env: { ...process.env, HOME: tmp } });
+    assert(
+      !out.includes("Already configured"),
+      "should not short-circuit when type is missing",
+    );
+    assert(
+      out.includes("Current statusLine setting"),
+      "should prompt for overwrite",
+    );
+  });
+});
+
+test("setup treats statusLine with non-command type as different", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, {
+      statusLine: { type: "url", command: "claude-code-statusline" },
+    });
+    const out = run(["setup"], { env: { ...process.env, HOME: tmp } });
+    assert(
+      !out.includes("Already configured"),
+      "should not short-circuit when type is non-command",
+    );
+    assert(
+      out.includes("Current statusLine setting"),
+      "should prompt for overwrite",
+    );
+  });
+});
+
 // ── icons resolution ─────────────────────────────────
 // The clock icon renders unconditionally in every output, so it is a
 // stable probe for which icon set was selected.
