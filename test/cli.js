@@ -287,6 +287,95 @@ test("icons process.env beats settings.env and config", () => {
   });
 });
 
+test("icons command reports unicode default", () => {
+  withTmpHome((tmp) => {
+    const out = run(["icons"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(out.includes("Current icons: unicode"), "missing current mode");
+    assert(
+      out.includes(path.join(tmp, ".claude", "claude-code-statusline.json")),
+      "missing config path",
+    );
+  });
+});
+
+test("icons command sets nerd config", () => {
+  withTmpHome((tmp) => {
+    const out = run(["icons", "nerd"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(out.includes("Set icons to nerd"), "missing set message");
+    assert(cfg.icons === "nerd", "icons not set");
+  });
+});
+
+test("icons command sets unicode explicitly", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { icons: "nerd" });
+    const out = run(["icons", "unicode"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(out.includes("Set icons to unicode"), "missing set message");
+    assert(cfg.icons === "unicode", "icons not set");
+  });
+});
+
+test("icons command preserves existing config keys", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { futureKey: 1 });
+    run(["icons", "nerd"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.icons === "nerd", "icons not set");
+    assert(cfg.futureKey === 1, "existing key lost");
+  });
+});
+
+test("icons command rejects invalid mode", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { icons: "nerd" });
+    try {
+      run(["icons", "bogus"], {
+        env: cleanEnv({ HOME: tmp }),
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+      throw new Error("expected command to fail");
+    } catch (err) {
+      assert(err.status === 1, "expected exit code 1");
+      assert(
+        err.stderr.includes('Expected "unicode" or "nerd".'),
+        "missing invalid mode message",
+      );
+    }
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.icons === "nerd", "config should not change");
+  });
+});
+
 test("icons invalid value falls back to unicode default", () => {
   withTmpHome((tmp) => {
     seedConfig(tmp, { icons: "bogus" });

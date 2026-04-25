@@ -6,6 +6,8 @@ const arg = process.argv[2];
 
 if (arg === "setup") {
   require("../lib/setup.js").run(process.argv.slice(3));
+} else if (arg === "icons") {
+  require("../lib/icons.js").run(process.argv.slice(3));
 } else if (arg === "--version" || arg === "-v") {
   console.log(require("../package.json").version);
 } else if (arg === "--help" || arg === "-h" || process.stdin.isTTY) {
