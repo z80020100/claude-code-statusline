@@ -20,16 +20,16 @@
     "ci:local": "act push --container-architecture linux/amd64",
     "lint": "npm run lint:js && npm run lint:sh && npm run lint:yml",
     "lint:js": "eslint .",
-    "lint:sh": "shellcheck .githooks/pre-commit",
+    "lint:sh": "shellcheck .husky/pre-commit",
     "lint:yml": "actionlint .github/workflows/*.yml",
     "lint:fix": "eslint --fix .",
     "format:check": "npm run format:check:js && npm run format:check:sh",
     "format:check:js": "prettier --check .",
-    "format:check:sh": "shfmt -i 4 -d .githooks/pre-commit",
+    "format:check:sh": "shfmt -i 4 -d .husky/pre-commit",
     "format:fix": "npm run format:fix:js && npm run format:fix:sh",
     "format:fix:js": "prettier --write .",
-    "format:fix:sh": "shfmt -i 4 -w .githooks/pre-commit",
-    "prepare": "git config --local core.hooksPath .githooks",
+    "format:fix:sh": "shfmt -i 4 -w .husky/pre-commit",
+    "prepare": "husky",
     "postinstall": "node -e \"console.log('\\n  Run setup to configure Claude Code automatically:\\n    claude-code-statusline setup\\n')\"",
     "prepublishOnly": "npm run test"
   },
@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "eslint": "^10.2.1",
+    "husky": "^9.1.7",
     "prettier": "^3.8.3"
   }
 }
