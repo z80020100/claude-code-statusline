@@ -1,0 +1,20 @@
+{
+  "name": "claude-code-statusline",
+  "version": "1.0.0",
+  "description": "Custom status line for Claude Code — model info, context usage gradient bar, token stats, cost, git status, and rate limits",
+  "author": {
+    "name": "Cliff Wu",
+    "url": "https://github.com/z80020100"
+  },
+  "homepage": "https://github.com/z80020100/claude-code-statusline",
+  "repository": "https://github.com/z80020100/claude-code-statusline",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "statusline",
+    "status-line",
+    "cli",
+    "terminal",
+    "ansi"
+  ]
+}
