@@ -54,7 +54,7 @@ claude plugin marketplace add z80020100/claude-code-statusline
 claude plugin install claude-code-statusline@claude-code-statusline
 ```
 
-The slash command auto-installs `@z80020100/claude-code-statusline` from npm if it is not already on PATH, then writes the same `command: "claude-code-statusline"` entry. Run it inside Claude Code:
+The slash command installs the latest `@z80020100/claude-code-statusline` from npm and writes the same `command: "claude-code-statusline"` entry. If npm's global bin directory is not on your PATH, the CLI prints a warning with instructions. Run it inside Claude Code:
 
 ```
 /claude-code-statusline:setup

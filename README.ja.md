@@ -54,7 +54,7 @@ claude plugin marketplace add z80020100/claude-code-statusline
 claude plugin install claude-code-statusline@claude-code-statusline
 ```
 
-スラッシュコマンドは PATH 上に `claude-code-statusline` が見つからない場合に自動で `npm install -g @z80020100/claude-code-statusline` を実行し、その後同じ `command: "claude-code-statusline"` 設定を書き込みます。Claude Code 内で実行してください：
+スラッシュコマンドは npm から最新の `@z80020100/claude-code-statusline` をインストールし、その後同じ `command: "claude-code-statusline"` 設定を書き込みます。npm のグローバル bin ディレクトリが PATH に含まれていない場合 CLI が修正手順を含む警告を表示します。Claude Code 内で実行してください：
 
 ```
 /claude-code-statusline:setup

@@ -54,7 +54,7 @@ claude plugin marketplace add z80020100/claude-code-statusline
 claude plugin install claude-code-statusline@claude-code-statusline
 ```
 
-slash command 在 PATH 上找不到 `claude-code-statusline` 時會自動 `npm install -g @z80020100/claude-code-statusline`，然後寫入相同的 `command: "claude-code-statusline"` 設定。請在 Claude Code 內執行：
+slash command 會從 npm 安裝最新版的 `@z80020100/claude-code-statusline`，然後寫入相同的 `command: "claude-code-statusline"` 設定。如果 npm 全域 bin 目錄不在 PATH 上，CLI 會印出包含修正指引的警告。請在 Claude Code 內執行：
 
 ```
 /claude-code-statusline:setup
