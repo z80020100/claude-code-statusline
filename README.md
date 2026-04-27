@@ -60,10 +60,17 @@ The slash command installs the latest `@z80020100/claude-code-statusline` from n
 /claude-code-statusline:setup
 ```
 
-To remove:
+To remove the `statusLine` entry:
 
 ```
 /claude-code-statusline:setup --uninstall
+```
+
+To fully uninstall the plugin and marketplace:
+
+```sh
+claude plugin uninstall claude-code-statusline@claude-code-statusline
+claude plugin marketplace remove claude-code-statusline
 ```
 
 ## Icon Mode

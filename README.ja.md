@@ -60,10 +60,17 @@ claude plugin install claude-code-statusline@claude-code-statusline
 /claude-code-statusline:setup
 ```
 
-設定を削除する場合：
+`statusLine` 設定を削除する場合：
 
 ```
 /claude-code-statusline:setup --uninstall
+```
+
+プラグインとマーケットプレイスを完全に削除する場合：
+
+```sh
+claude plugin uninstall claude-code-statusline@claude-code-statusline
+claude plugin marketplace remove claude-code-statusline
 ```
 
 ## アイコンモード
