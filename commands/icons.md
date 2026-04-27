@@ -2,6 +2,7 @@
 description: Switch claude-code-statusline icon mode or show current mode
 argument-hint: [unicode|nerd]
 allowed-tools: Bash(claude-code-statusline:*)
+disable-model-invocation: true
 ---
 
 Run this command exactly:

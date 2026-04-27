@@ -2,6 +2,7 @@
 description: Configure or remove claude-code-statusline in ~/.claude/settings.json
 argument-hint: [--uninstall]
 allowed-tools: Bash(command -v claude-code-statusline:*), Bash(npm install -g @z80020100/claude-code-statusline:*), Bash(claude-code-statusline:*)
+disable-model-invocation: true
 ---
 
 If `$ARGUMENTS` is `--uninstall`, run this command exactly:
