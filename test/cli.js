@@ -32,7 +32,7 @@ function assert(condition, message) {
 }
 
 function run(args = [], opts = {}) {
-  return execFileSync("node", [CLI, ...args], {
+  return execFileSync(process.execPath, [CLI, ...args], {
     encoding: "utf8",
     timeout: 10000,
     ...opts,
@@ -377,11 +377,7 @@ test("setup treats statusLine with non-command type as different", () => {
 
 test("setup warns when claude-code-statusline is not on PATH", () => {
   withTmpHome((tmp) => {
-    const out = execFileSync(process.execPath, [CLI, "setup"], {
-      encoding: "utf8",
-      timeout: 10000,
-      env: { HOME: tmp, PATH: "" },
-    });
+    const out = run(["setup"], { env: { HOME: tmp, PATH: "" } });
     assert(out.includes("not on your PATH"), "missing PATH warning");
   });
 });
@@ -393,11 +389,7 @@ test("setup omits PATH warning when binary is reachable", () => {
     const fakeExe = path.join(fakeBin, "claude-code-statusline");
     fs.writeFileSync(fakeExe, "");
     fs.chmodSync(fakeExe, 0o755);
-    const out = execFileSync(process.execPath, [CLI, "setup"], {
-      encoding: "utf8",
-      timeout: 10000,
-      env: { HOME: tmp, PATH: fakeBin },
-    });
+    const out = run(["setup"], { env: { HOME: tmp, PATH: fakeBin } });
     assert(
       !out.includes("not on your PATH"),
       "should not warn when binary is reachable",
