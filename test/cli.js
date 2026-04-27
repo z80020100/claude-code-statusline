@@ -96,6 +96,7 @@ test("stdin with invalid JSON exits silently", () => {
 });
 
 const UNDERLINE = "\x1b[4m";
+const stripAnsi = (s) => s.replace(/\x1b\[[0-9;]*m/g, "");
 
 test("stdin effort.level overrides settings.effortLevel", () => {
   withTmpHome((tmp) => {
@@ -118,12 +119,15 @@ test("effort source: settings.effortLevel set renders explicit (no marker)", () 
       effort: { level: "high" },
     });
     const out = run([], { input, env: cleanEnv({ HOME: tmp }) });
-    assert(!out.includes("auto→"), `unexpected auto→ prefix: ${out}`);
+    assert(
+      !stripAnsi(out).includes("auto high"),
+      `unexpected auto prefix: ${out}`,
+    );
     assert(!out.includes(UNDERLINE), `unexpected underline: ${out}`);
   });
 });
 
-test("effort source: no env, no effortLevel renders auto→ prefix", () => {
+test("effort source: no env, no effortLevel renders auto prefix", () => {
   withTmpHome((tmp) => {
     seedSettings(tmp, {});
     const input = JSON.stringify({
@@ -131,7 +135,10 @@ test("effort source: no env, no effortLevel renders auto→ prefix", () => {
       effort: { level: "xhigh" },
     });
     const out = run([], { input, env: cleanEnv({ HOME: tmp }) });
-    assert(out.includes("auto→xhigh"), `expected auto→xhigh prefix: ${out}`);
+    assert(
+      stripAnsi(out).includes("auto xhigh"),
+      `expected "auto xhigh" prefix: ${out}`,
+    );
     assert(!out.includes(UNDERLINE), `unexpected underline: ${out}`);
   });
 });
@@ -145,7 +152,10 @@ test("effort source: env-locked level underlines the level", () => {
     });
     const out = run([], { input, env: cleanEnv({ HOME: tmp }) });
     assert(out.includes(`${UNDERLINE}high`), `expected underline+high: ${out}`);
-    assert(!out.includes("auto→"), `unexpected auto→ prefix: ${out}`);
+    assert(
+      !stripAnsi(out).includes("auto high"),
+      `unexpected auto prefix: ${out}`,
+    );
   });
 });
 
@@ -158,7 +168,10 @@ test("effort source: env-locked auto underlines auto and shows resolved level", 
     });
     const out = run([], { input, env: cleanEnv({ HOME: tmp }) });
     assert(out.includes(`${UNDERLINE}auto`), `expected underline+auto: ${out}`);
-    assert(out.includes("→xhigh"), `expected →xhigh after auto: ${out}`);
+    assert(
+      stripAnsi(out).includes("auto xhigh"),
+      `expected "auto xhigh": ${out}`,
+    );
   });
 });
 
