@@ -23,7 +23,7 @@ Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-c
 
 Two equivalent paths — pick one. Both write a `statusLine` entry to `~/.claude/settings.json`.
 
-### Option A — npm
+### npm
 
 ```sh
 npm install -g @z80020100/claude-code-statusline
@@ -47,14 +47,14 @@ To remove:
 claude-code-statusline setup --uninstall
 ```
 
-### Option B — Claude Code plugin
+### Claude Code plugin
 
 ```sh
 claude plugin marketplace add z80020100/claude-code-statusline
 claude plugin install claude-code-statusline@claude-code-statusline
 ```
 
-The bundled slash command writes the same entry shape with an absolute path (`node "$CLAUDE_PLUGIN_ROOT/bin/..."`) to the plugin's installed binary. Run it inside Claude Code:
+The slash command auto-installs `@z80020100/claude-code-statusline` from npm if it is not already on PATH, then writes the same `command: "claude-code-statusline"` entry. Run it inside Claude Code:
 
 ```
 /claude-code-statusline:setup
@@ -70,7 +70,7 @@ To remove:
 
 Icons default to plain Unicode symbols for broad terminal compatibility.
 
-CLI (Option A):
+CLI:
 
 ```sh
 claude-code-statusline icons          # show current mode
@@ -78,7 +78,7 @@ claude-code-statusline icons nerd     # use Nerd Font icons
 claude-code-statusline icons unicode  # use Unicode icons
 ```
 
-Plugin slash command (Option B, equivalent):
+Plugin slash command (equivalent):
 
 ```
 /claude-code-statusline:icons

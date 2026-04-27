@@ -1,19 +1,19 @@
 ---
 description: Configure or remove claude-code-statusline in ~/.claude/settings.json
 argument-hint: [--uninstall]
-allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/bin/claude-code-statusline.js":*)
+allowed-tools: Bash(command -v claude-code-statusline:*), Bash(npm install -g @z80020100/claude-code-statusline:*), Bash(claude-code-statusline:*)
 ---
 
-If `$ARGUMENTS` is empty, run this command exactly:
+If `$ARGUMENTS` is `--uninstall`, run this command exactly:
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/bin/claude-code-statusline.js" setup --command "node \"${CLAUDE_PLUGIN_ROOT}/bin/claude-code-statusline.js\""
+claude-code-statusline setup --uninstall
 ```
 
-If `$ARGUMENTS` is `--uninstall`, run:
+Otherwise, run this command exactly (auto-installs the CLI from npm if missing):
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/bin/claude-code-statusline.js" setup --uninstall
+command -v claude-code-statusline >/dev/null 2>&1 || npm install -g @z80020100/claude-code-statusline && claude-code-statusline setup
 ```
 
 Show the CLI output verbatim. The CLI handles writing the `statusLine` entry, idempotency, and the overwrite prompt for any existing different `statusLine`.
