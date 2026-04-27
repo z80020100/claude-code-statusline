@@ -375,6 +375,36 @@ test("setup treats statusLine with non-command type as different", () => {
   });
 });
 
+test("setup warns when claude-code-statusline is not on PATH", () => {
+  withTmpHome((tmp) => {
+    const out = execFileSync(process.execPath, [CLI, "setup"], {
+      encoding: "utf8",
+      timeout: 10000,
+      env: { HOME: tmp, PATH: "" },
+    });
+    assert(out.includes("not on your PATH"), "missing PATH warning");
+  });
+});
+
+test("setup omits PATH warning when binary is reachable", () => {
+  withTmpHome((tmp) => {
+    const fakeBin = path.join(tmp, "fake-bin");
+    fs.mkdirSync(fakeBin);
+    const fakeExe = path.join(fakeBin, "claude-code-statusline");
+    fs.writeFileSync(fakeExe, "");
+    fs.chmodSync(fakeExe, 0o755);
+    const out = execFileSync(process.execPath, [CLI, "setup"], {
+      encoding: "utf8",
+      timeout: 10000,
+      env: { HOME: tmp, PATH: fakeBin },
+    });
+    assert(
+      !out.includes("not on your PATH"),
+      "should not warn when binary is reachable",
+    );
+  });
+});
+
 // ── icons resolution ─────────────────────────────────
 // The clock icon renders unconditionally in every output, so it is a
 // stable probe for which icon set was selected.
