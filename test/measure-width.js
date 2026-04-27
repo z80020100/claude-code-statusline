@@ -33,7 +33,8 @@ worstCase.rate_limits = {
 // Call render() directly with all overrides — no subprocesses or cache files
 const lines = render(worstCase, {
   home: "/Users/username",
-  effort: "max",
+  effort: "medium",
+  effortSource: "lockedAuto",
   sandboxMode: "auto",
   now: new Date(),
   git: {
