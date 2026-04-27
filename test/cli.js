@@ -95,6 +95,8 @@ test("stdin with invalid JSON exits silently", () => {
   assert(out === "", `expected empty output but got "${out}"`);
 });
 
+const UNDERLINE = "\x1b[4m";
+
 test("stdin effort.level overrides settings.effortLevel", () => {
   withTmpHome((tmp) => {
     seedSettings(tmp, { effortLevel: "low" });
@@ -102,9 +104,61 @@ test("stdin effort.level overrides settings.effortLevel", () => {
       model: { display_name: "Test Model" },
       effort: { level: "xhigh" },
     });
-    const out = run([], { input, env: { ...process.env, HOME: tmp } });
+    const out = run([], { input, env: cleanEnv({ HOME: tmp }) });
     assert(out.includes("xhigh"), `expected "xhigh" in output, got: ${out}`);
     assert(!out.includes(" low"), `unexpected "low" in output: ${out}`);
+  });
+});
+
+test("effort source: settings.effortLevel set renders explicit (no marker)", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, { effortLevel: "high" });
+    const input = JSON.stringify({
+      model: { display_name: "M" },
+      effort: { level: "high" },
+    });
+    const out = run([], { input, env: cleanEnv({ HOME: tmp }) });
+    assert(!out.includes("auto→"), `unexpected auto→ prefix: ${out}`);
+    assert(!out.includes(UNDERLINE), `unexpected underline: ${out}`);
+  });
+});
+
+test("effort source: no env, no effortLevel renders auto→ prefix", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, {});
+    const input = JSON.stringify({
+      model: { display_name: "M" },
+      effort: { level: "xhigh" },
+    });
+    const out = run([], { input, env: cleanEnv({ HOME: tmp }) });
+    assert(out.includes("auto→xhigh"), `expected auto→xhigh prefix: ${out}`);
+    assert(!out.includes(UNDERLINE), `unexpected underline: ${out}`);
+  });
+});
+
+test("effort source: env-locked level underlines the level", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, { env: { CLAUDE_CODE_EFFORT_LEVEL: "high" } });
+    const input = JSON.stringify({
+      model: { display_name: "M" },
+      effort: { level: "high" },
+    });
+    const out = run([], { input, env: cleanEnv({ HOME: tmp }) });
+    assert(out.includes(`${UNDERLINE}high`), `expected underline+high: ${out}`);
+    assert(!out.includes("auto→"), `unexpected auto→ prefix: ${out}`);
+  });
+});
+
+test("effort source: env-locked auto underlines auto and shows resolved level", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, { env: { CLAUDE_CODE_EFFORT_LEVEL: "auto" } });
+    const input = JSON.stringify({
+      model: { display_name: "M" },
+      effort: { level: "xhigh" },
+    });
+    const out = run([], { input, env: cleanEnv({ HOME: tmp }) });
+    assert(out.includes(`${UNDERLINE}auto`), `expected underline+auto: ${out}`);
+    assert(out.includes("→xhigh"), `expected →xhigh after auto: ${out}`);
   });
 });
 
@@ -421,6 +475,7 @@ const RENDER_INPUT = JSON.stringify({ model: { display_name: "T" } });
 function cleanEnv(extra) {
   const env = { ...process.env };
   delete env.CLAUDE_STATUSLINE_ICONS;
+  delete env.CLAUDE_CODE_EFFORT_LEVEL;
   return { ...env, ...extra };
 }
 
