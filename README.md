@@ -21,17 +21,16 @@ Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-c
 
 ## Installation
 
+Two equivalent paths — pick one. Both write a `statusLine` entry to `~/.claude/settings.json`.
+
+### npm
+
 ```sh
 npm install -g @z80020100/claude-code-statusline
-```
-
-## Setup
-
-```sh
 claude-code-statusline setup
 ```
 
-This writes the `statusLine` entry to `~/.claude/settings.json`:
+This writes `command: "claude-code-statusline"` (relies on PATH):
 
 ```json
 {
@@ -48,9 +47,37 @@ To remove:
 claude-code-statusline setup --uninstall
 ```
 
+### Claude Code plugin
+
+```sh
+claude plugin marketplace add z80020100/claude-code-statusline
+claude plugin install claude-code-statusline@claude-code-statusline
+```
+
+The slash command installs the latest `@z80020100/claude-code-statusline` from npm and writes the same `command: "claude-code-statusline"` entry. If npm's global bin directory is not on your PATH, the CLI prints a warning with instructions. Run it inside Claude Code:
+
+```
+/claude-code-statusline:setup
+```
+
+To remove the `statusLine` entry:
+
+```
+/claude-code-statusline:setup --uninstall
+```
+
+To fully uninstall the plugin and marketplace:
+
+```sh
+claude plugin uninstall claude-code-statusline@claude-code-statusline
+claude plugin marketplace remove claude-code-statusline
+```
+
 ## Icon Mode
 
 Icons default to plain Unicode symbols for broad terminal compatibility.
+
+CLI:
 
 ```sh
 claude-code-statusline icons          # show current mode
@@ -58,7 +85,15 @@ claude-code-statusline icons nerd     # use Nerd Font icons
 claude-code-statusline icons unicode  # use Unicode icons
 ```
 
-This writes `~/.claude/claude-code-statusline.json`. `CLAUDE_STATUSLINE_ICONS` still takes precedence when set.
+Plugin slash command (equivalent):
+
+```
+/claude-code-statusline:icons
+/claude-code-statusline:icons nerd
+/claude-code-statusline:icons unicode
+```
+
+Both write `~/.claude/claude-code-statusline.json`. `CLAUDE_STATUSLINE_ICONS` still takes precedence when set.
 
 ## Display Layout
 

@@ -1,0 +1,16 @@
+{
+  "name": "claude-code-statusline",
+  "owner": {
+    "name": "z80020100",
+    "url": "https://github.com/z80020100"
+  },
+  "metadata": {
+    "description": "Marketplace for the claude-code-statusline plugin."
+  },
+  "plugins": [
+    {
+      "name": "claude-code-statusline",
+      "source": "./"
+    }
+  ]
+}
