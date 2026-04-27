@@ -95,6 +95,19 @@ test("stdin with invalid JSON exits silently", () => {
   assert(out === "", `expected empty output but got "${out}"`);
 });
 
+test("stdin effort.level overrides settings.effortLevel", () => {
+  withTmpHome((tmp) => {
+    seedSettings(tmp, { effortLevel: "low" });
+    const input = JSON.stringify({
+      model: { display_name: "Test Model" },
+      effort: { level: "xhigh" },
+    });
+    const out = run([], { input, env: { ...process.env, HOME: tmp } });
+    assert(out.includes("xhigh"), `expected "xhigh" in output, got: ${out}`);
+    assert(!out.includes(" low"), `unexpected "low" in output: ${out}`);
+  });
+});
+
 // ── setup / uninstall ────────────────────────────────
 
 test("setup creates settings.json with statusLine", () => {
