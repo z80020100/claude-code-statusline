@@ -10,6 +10,14 @@ if (arg === "setup") {
   require("../lib/icons.js").run(process.argv.slice(3));
 } else if (arg === "update-check") {
   require("../lib/update-check.js").run(process.argv.slice(3));
+} else if (arg === "__update-check") {
+  const { runBackgroundCheck } = require("../lib/update-check.js");
+  const opts = {
+    target: process.argv[3] ?? "",
+    current: process.argv[4] ?? "",
+  };
+  if (process.argv[5]) opts.home = process.argv[5];
+  runBackgroundCheck(opts).catch(() => {});
 } else if (arg === "--version" || arg === "-v") {
   console.log(require("../package.json").version);
 } else if (arg === "--help" || arg === "-h" || process.stdin.isTTY) {

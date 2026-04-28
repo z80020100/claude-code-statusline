@@ -488,11 +488,16 @@ test("setup omits PATH warning when binary is reachable", () => {
 const NERD_CLOCK = "\uf017";
 const UNICODE_CLOCK = "\u25F7";
 const RENDER_INPUT = JSON.stringify({ model: { display_name: "T" } });
+const VERSIONED_INPUT = JSON.stringify({
+  model: { display_name: "T" },
+  version: "2.1.95",
+});
 
 function cleanEnv(extra) {
   const env = { ...process.env };
   delete env.CLAUDE_STATUSLINE_ICONS;
   delete env.CLAUDE_CODE_EFFORT_LEVEL;
+  delete env.CLAUDE_STATUSLINE_UPDATE_CHECK;
   return { ...env, ...extra };
 }
 
@@ -502,6 +507,15 @@ function seedConfig(tmp, data) {
   fs.writeFileSync(
     path.join(dir, "claude-code-statusline.json"),
     JSON.stringify(data) + "\n",
+  );
+}
+
+function seedClaudeUpdateCache(tmp, data) {
+  const dir = path.join(tmp, ".claude", ".cache");
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, "update-check-claude.json"),
+    JSON.stringify(data),
   );
 }
 
@@ -670,6 +684,65 @@ test("icons invalid value falls back to unicode default", () => {
     });
     assert(out.includes(UNICODE_CLOCK), "expected unicode clock");
     assert(!out.includes(NERD_CLOCK), "unexpected nerd clock");
+  });
+});
+
+// ── Claude Code update check ─────────────────────────
+
+test("Claude Code update check disabled by default", () => {
+  withTmpHome((tmp) => {
+    seedClaudeUpdateCache(tmp, {
+      checkedAt: Date.now(),
+      current: "2.1.95",
+      latest: "999.0.0",
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(
+      !stripAnsi(out).includes("→ v999.0.0"),
+      `unexpected update indicator when disabled: ${out}`,
+    );
+  });
+});
+
+test("Claude Code update check shows indicator when env enabled and cache newer", () => {
+  withTmpHome((tmp) => {
+    seedClaudeUpdateCache(tmp, {
+      checkedAt: Date.now(),
+      current: "2.1.95",
+      latest: "999.0.0",
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp, CLAUDE_STATUSLINE_UPDATE_CHECK: "1" }),
+    });
+    assert(
+      stripAnsi(out).includes("→ v999.0.0"),
+      `expected "→ v999.0.0" in first line: ${out}`,
+    );
+  });
+});
+
+test("Claude Code update check hides indicator when latest equals current", () => {
+  withTmpHome((tmp) => {
+    seedClaudeUpdateCache(tmp, {
+      checkedAt: Date.now(),
+      current: "2.1.95",
+      latest: "2.1.95",
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp, CLAUDE_STATUSLINE_UPDATE_CHECK: "1" }),
+    });
+    assert(
+      !stripAnsi(out).includes("→ v2.1.95"),
+      `unexpected indicator when up-to-date: ${out}`,
+    );
   });
 });
 

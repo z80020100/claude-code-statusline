@@ -44,6 +44,7 @@ const lines = render(worstCase, {
     diffAdded: 99999,
     diffRemoved: 99999,
   },
+  update: { claude: { available: true, latest: "2.999.999" } },
 });
 
 function stripAnsi(str) {
