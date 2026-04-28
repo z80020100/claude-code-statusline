@@ -75,6 +75,10 @@ test("--help prints complete help output", () => {
   assert(out.includes(PKG.description), "missing description");
   assert(out.includes("Usage:"), "missing Usage:");
   assert(out.includes("claude-code-statusline icons"), "missing icons command");
+  assert(
+    out.includes("claude-code-statusline update-check"),
+    "missing update-check command",
+  );
   assert(out.includes(PKG.author), "missing author");
   assert(out.includes(PKG.license), "missing license");
 });
@@ -666,6 +670,147 @@ test("icons invalid value falls back to unicode default", () => {
     });
     assert(out.includes(UNICODE_CLOCK), "expected unicode clock");
     assert(!out.includes(NERD_CLOCK), "unexpected nerd clock");
+  });
+});
+
+// ── update-check CLI command ─────────────────────────
+
+test("update-check command reports all targets off by default", () => {
+  withTmpHome((tmp) => {
+    const out = run(["update-check"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(out.includes("Current update check:"), "missing header");
+    assert(out.includes("claude: off"), "missing claude state");
+    assert(
+      out.includes(path.join(tmp, ".claude", "claude-code-statusline.json")),
+      "missing config path",
+    );
+  });
+});
+
+test("update-check claude reports single target state", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { updateCheck: { claude: true } });
+    const out = run(["update-check", "claude"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(out.includes("claude: on"), "missing claude on state");
+  });
+});
+
+test("update-check claude on enables the target", () => {
+  withTmpHome((tmp) => {
+    const out = run(["update-check", "claude", "on"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(
+      out.includes("Set claude update check to on"),
+      "missing set message",
+    );
+    assert(cfg.updateCheck?.claude === true, "claude not enabled");
+  });
+});
+
+test("update-check claude off disables the target", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { updateCheck: { claude: true } });
+    const out = run(["update-check", "claude", "off"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(
+      out.includes("Set claude update check to off"),
+      "missing set message",
+    );
+    assert(cfg.updateCheck?.claude === false, "claude not disabled");
+  });
+});
+
+test("update-check all on enables every known target", () => {
+  withTmpHome((tmp) => {
+    run(["update-check", "all", "on"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.updateCheck?.claude === true, "claude not enabled by all");
+  });
+});
+
+test("update-check command preserves existing config keys", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { icons: "nerd" });
+    run(["update-check", "claude", "on"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.updateCheck?.claude === true, "claude not set");
+    assert(cfg.icons === "nerd", "existing key lost");
+  });
+});
+
+test("update-check rejects invalid target", () => {
+  withTmpHome((tmp) => {
+    try {
+      run(["update-check", "bogus", "on"], {
+        env: cleanEnv({ HOME: tmp }),
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+      throw new Error("expected command to fail");
+    } catch (err) {
+      assert(err.status === 1, "expected exit code 1");
+      assert(
+        err.stderr.includes('Invalid target "bogus"'),
+        "missing invalid target message",
+      );
+    }
+  });
+});
+
+test("update-check rejects invalid value", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { updateCheck: { claude: true } });
+    try {
+      run(["update-check", "claude", "yes"], {
+        env: cleanEnv({ HOME: tmp }),
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+      throw new Error("expected command to fail");
+    } catch (err) {
+      assert(err.status === 1, "expected exit code 1");
+      assert(
+        err.stderr.includes('Expected "on" or "off".'),
+        "missing invalid value message",
+      );
+    }
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.updateCheck?.claude === true, "config should not change");
   });
 });
 
