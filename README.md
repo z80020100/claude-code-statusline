@@ -95,6 +95,38 @@ Plugin slash command (equivalent):
 
 Both write `~/.claude/claude-code-statusline.json`. `CLAUDE_STATUSLINE_ICONS` still takes precedence when set.
 
+## Update Check
+
+All targets are off by default. When a target is enabled, the version line shows `→ vX.Y.Z` whenever its npm `latest` tag is newer than the running version. Lookups run in a detached background process at most once every hour per target and results are cached at `~/.claude/.cache/update-check-<target>.json`.
+
+Targets currently supported:
+
+| Target   | Package                     | Indicator location       |
+| -------- | --------------------------- | ------------------------ |
+| `claude` | `@anthropic-ai/claude-code` | Claude Code version line |
+
+CLI:
+
+```sh
+claude-code-statusline update-check                # show every target's state
+claude-code-statusline update-check claude on      # enable Claude Code check
+claude-code-statusline update-check claude off     # disable Claude Code check
+claude-code-statusline update-check all on         # enable every target
+claude-code-statusline update-check all off        # disable every target
+```
+
+Plugin slash command (equivalent):
+
+```
+/claude-code-statusline:update-check
+/claude-code-statusline:update-check claude on
+/claude-code-statusline:update-check claude off
+/claude-code-statusline:update-check all on
+/claude-code-statusline:update-check all off
+```
+
+Both write `~/.claude/claude-code-statusline.json` under the `updateCheck` key. `CLAUDE_STATUSLINE_UPDATE_CHECK` (`1` or `true` to enable every target, otherwise disable) still takes precedence when set.
+
 ## Display Layout
 
 All fields at maximum width:
