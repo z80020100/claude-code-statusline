@@ -13,6 +13,7 @@ const path = require("path");
 
 const CLI = path.join(__dirname, "..", "bin", "claude-code-statusline.js");
 const PKG = require("../package.json");
+const { writeCache } = require("../lib/update-check.js");
 
 let failed = 0;
 
@@ -510,13 +511,8 @@ function seedConfig(tmp, data) {
   );
 }
 
-function seedClaudeUpdateCache(tmp, data) {
-  const dir = path.join(tmp, ".claude", ".cache");
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(
-    path.join(dir, "update-check-claude.json"),
-    JSON.stringify(data),
-  );
+function seedUpdateCache(tmp, target, data) {
+  writeCache(data, tmp, target);
 }
 
 test("icons defaults to unicode when nothing is configured", () => {
@@ -691,7 +687,7 @@ test("icons invalid value falls back to unicode default", () => {
 
 test("Claude Code update check disabled by default", () => {
   withTmpHome((tmp) => {
-    seedClaudeUpdateCache(tmp, {
+    seedUpdateCache(tmp, "claude", {
       checkedAt: Date.now(),
       current: "2.1.95",
       latest: "999.0.0",
@@ -710,7 +706,7 @@ test("Claude Code update check disabled by default", () => {
 
 test("Claude Code update check shows indicator when env enabled and cache newer", () => {
   withTmpHome((tmp) => {
-    seedClaudeUpdateCache(tmp, {
+    seedUpdateCache(tmp, "claude", {
       checkedAt: Date.now(),
       current: "2.1.95",
       latest: "999.0.0",
@@ -729,7 +725,7 @@ test("Claude Code update check shows indicator when env enabled and cache newer"
 
 test("Claude Code update check hides indicator when latest equals current", () => {
   withTmpHome((tmp) => {
-    seedClaudeUpdateCache(tmp, {
+    seedUpdateCache(tmp, "claude", {
       checkedAt: Date.now(),
       current: "2.1.95",
       latest: "2.1.95",
@@ -811,9 +807,9 @@ test("update-check claude off disables the target", () => {
   });
 });
 
-test("update-check all on enables every known target", () => {
+test("update-check on enables both checks", () => {
   withTmpHome((tmp) => {
-    run(["update-check", "all", "on"], {
+    const out = run(["update-check", "on"], {
       env: cleanEnv({ HOME: tmp }),
     });
     const cfg = JSON.parse(
@@ -822,7 +818,24 @@ test("update-check all on enables every known target", () => {
         "utf8",
       ),
     );
-    assert(cfg.updateCheck?.claude === true, "claude not enabled by all");
+    assert(out.includes("Set both update checks to on"), "missing set message");
+    assert(cfg.updateCheck?.claude === true, "claude not enabled");
+    assert(cfg.updateCheck?.statusline === true, "statusline not enabled");
+  });
+});
+
+test("update-check off disables both checks", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { updateCheck: { claude: true, statusline: true } });
+    run(["update-check", "off"], { env: cleanEnv({ HOME: tmp }) });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.updateCheck?.claude === false, "claude not disabled");
+    assert(cfg.updateCheck?.statusline === false, "statusline not disabled");
   });
 });
 
