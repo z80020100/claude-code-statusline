@@ -712,6 +712,14 @@ test("Claude Code update check shows indicator when env enabled and cache newer"
       latest: "999.0.0",
       ok: true,
     });
+    // CLAUDE_STATUSLINE_UPDATE_CHECK enables every target; seed the
+    // statusline cache fresh so peekUpdate stays cache-fresh and avoids spawning.
+    seedUpdateCache(tmp, "statusline", {
+      checkedAt: Date.now(),
+      current: PKG.version,
+      latest: PKG.version,
+      ok: true,
+    });
     const out = run([], {
       input: VERSIONED_INPUT,
       env: cleanEnv({ HOME: tmp, CLAUDE_STATUSLINE_UPDATE_CHECK: "1" }),
@@ -731,6 +739,12 @@ test("Claude Code update check hides indicator when latest equals current", () =
       latest: "2.1.95",
       ok: true,
     });
+    seedUpdateCache(tmp, "statusline", {
+      checkedAt: Date.now(),
+      current: PKG.version,
+      latest: PKG.version,
+      ok: true,
+    });
     const out = run([], {
       input: VERSIONED_INPUT,
       env: cleanEnv({ HOME: tmp, CLAUDE_STATUSLINE_UPDATE_CHECK: "1" }),
@@ -738,6 +752,123 @@ test("Claude Code update check hides indicator when latest equals current", () =
     assert(
       !stripAnsi(out).includes("→ v2.1.95"),
       `unexpected indicator when up-to-date: ${out}`,
+    );
+  });
+});
+
+// ── Statusline self-update check ─────────────────────
+
+test("statusline version always shows in banner", () => {
+  withTmpHome((tmp) => {
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(
+      stripAnsi(out).includes(`Statusline v${PKG.version}`),
+      `expected Statusline version always shown: ${out}`,
+    );
+  });
+});
+
+test("statusline self-update arrow stays hidden when check is off", () => {
+  withTmpHome((tmp) => {
+    seedUpdateCache(tmp, "statusline", {
+      checkedAt: Date.now(),
+      current: PKG.version,
+      latest: "999.0.0",
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const plain = stripAnsi(out);
+    assert(
+      !plain.includes("→ v999.0.0"),
+      `unexpected arrow when check disabled: ${out}`,
+    );
+    assert(
+      plain.includes(`Statusline v${PKG.version}`),
+      `expected Statusline version still shown: ${out}`,
+    );
+  });
+});
+
+test("statusline self-update arrow shows when check enabled and cache newer", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { updateCheck: { statusline: true } });
+    seedUpdateCache(tmp, "statusline", {
+      checkedAt: Date.now(),
+      current: PKG.version,
+      latest: "999.0.0",
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(
+      stripAnsi(out).includes(`Statusline v${PKG.version} → v999.0.0`),
+      `expected statusline arrow: ${out}`,
+    );
+  });
+});
+
+// ── Layout (banner / env line) ───────────────────────
+
+test("version banner always shows both Claude Code and Statusline versions", () => {
+  withTmpHome((tmp) => {
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const lines = stripAnsi(out).split("\n");
+    assert(
+      lines[0].includes("Claude Code v2.1.95"),
+      `expected Claude Code on line 1: ${out}`,
+    );
+    assert(
+      lines[0].includes(`Statusline v${PKG.version}`),
+      `expected Statusline on line 1: ${out}`,
+    );
+    assert(
+      !lines[0].includes("Sandbox"),
+      `Sandbox should not be on the banner line: ${out}`,
+    );
+    assert(lines[1].includes("Sandbox"), `expected Sandbox on line 2: ${out}`);
+  });
+});
+
+test("env line shows Sandbox label with state word", () => {
+  withTmpHome((tmp) => {
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const plain = stripAnsi(out);
+    assert(plain.includes("Sandbox"), `expected "Sandbox" label: ${out}`);
+    assert(
+      /Sandbox.+(off|on|auto)/.test(plain),
+      `expected Sandbox state word: ${out}`,
+    );
+  });
+});
+
+test("banner and env line are suppressed when version is missing", () => {
+  withTmpHome((tmp) => {
+    const out = run([], {
+      input: JSON.stringify({ model: { display_name: "T" } }),
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const plain = stripAnsi(out);
+    assert(
+      !plain.includes("Sandbox"),
+      `unexpected env line without version: ${out}`,
+    );
+    assert(
+      !plain.includes("✻"),
+      `unexpected banner glyph without version: ${out}`,
     );
   });
 });
