@@ -27,19 +27,21 @@ if (arg === "setup") {
 ${pkg.description}
 
 Usage:
-  claude-code-statusline                            Read JSON from stdin and render status line
-  claude-code-statusline setup                      Configure Claude Code to use this status line
-  claude-code-statusline setup --uninstall          Remove status line configuration
-  claude-code-statusline icons                      Show current icon mode
-  claude-code-statusline icons unicode              Use Unicode icons
-  claude-code-statusline icons nerd                 Use Nerd Font icons
-  claude-code-statusline update-check               Show all update check states
-  claude-code-statusline update-check claude on     Enable Claude Code update check
-  claude-code-statusline update-check claude off    Disable Claude Code update check
-  claude-code-statusline update-check all on        Enable every update check
-  claude-code-statusline update-check all off       Disable every update check
-  claude-code-statusline --help                     Show this help message
-  claude-code-statusline --version                  Show version
+  claude-code-statusline                              Read JSON from stdin and render status line
+  claude-code-statusline setup                        Configure Claude Code to use this status line
+  claude-code-statusline setup --uninstall            Remove status line configuration
+  claude-code-statusline icons                        Show current icon mode
+  claude-code-statusline icons unicode                Use Unicode icons
+  claude-code-statusline icons nerd                   Use Nerd Font icons
+  claude-code-statusline update-check                 Show both update check states
+  claude-code-statusline update-check on              Enable both update checks
+  claude-code-statusline update-check off             Disable both update checks
+  claude-code-statusline update-check claude on       Enable Claude Code update check
+  claude-code-statusline update-check claude off      Disable Claude Code update check
+  claude-code-statusline update-check statusline on   Enable statusline self-update check
+  claude-code-statusline update-check statusline off  Disable statusline self-update check
+  claude-code-statusline --help                       Show this help message
+  claude-code-statusline --version                    Show version
 
 Author:  ${pkg.author}
 License: ${pkg.license}
