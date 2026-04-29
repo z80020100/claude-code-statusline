@@ -97,35 +97,36 @@ Both write `~/.claude/claude-code-statusline.json`. `CLAUDE_STATUSLINE_ICONS` st
 
 ## Update Check
 
-All targets are off by default. When a target is enabled, the version line shows `→ vX.Y.Z` whenever its npm `latest` tag is newer than the running version. Lookups run in a detached background process at most once every hour per target and results are cached at `~/.claude/.cache/update-check-<target>.json`.
+The banner always shows both Claude Code and Statusline current versions. The update check toggles only control whether `→ vX.Y.Z` appears next to a version when the npm `latest` tag is newer. Both checks are off by default; each runs in a detached background process at most once per hour and caches the result under `~/.claude/.cache/`.
 
-Targets currently supported:
-
-| Target   | Package                     | Indicator location       |
-| -------- | --------------------------- | ------------------------ |
-| `claude` | `@anthropic-ai/claude-code` | Claude Code version line |
+- **Claude Code update check** — watches `@anthropic-ai/claude-code`.
+- **Statusline self-update check** — watches `@z80020100/claude-code-statusline`.
 
 CLI:
 
 ```sh
-claude-code-statusline update-check                # show every target's state
-claude-code-statusline update-check claude on      # enable Claude Code check
-claude-code-statusline update-check claude off     # disable Claude Code check
-claude-code-statusline update-check all on         # enable every target
-claude-code-statusline update-check all off        # disable every target
+claude-code-statusline update-check                  # show both states
+claude-code-statusline update-check on               # enable both
+claude-code-statusline update-check off              # disable both
+claude-code-statusline update-check claude on        # enable Claude Code check
+claude-code-statusline update-check claude off       # disable Claude Code check
+claude-code-statusline update-check statusline on    # enable statusline self-check
+claude-code-statusline update-check statusline off   # disable statusline self-check
 ```
 
 Plugin slash command (equivalent):
 
 ```
 /claude-code-statusline:update-check
+/claude-code-statusline:update-check on
+/claude-code-statusline:update-check off
 /claude-code-statusline:update-check claude on
 /claude-code-statusline:update-check claude off
-/claude-code-statusline:update-check all on
-/claude-code-statusline:update-check all off
+/claude-code-statusline:update-check statusline on
+/claude-code-statusline:update-check statusline off
 ```
 
-Both write `~/.claude/claude-code-statusline.json` under the `updateCheck` key. `CLAUDE_STATUSLINE_UPDATE_CHECK` (`1` or `true` to enable every target, otherwise disable) still takes precedence when set.
+Both write `~/.claude/claude-code-statusline.json` under the `updateCheck` key. `CLAUDE_STATUSLINE_UPDATE_CHECK` (`1` or `true` to enable both checks, otherwise disable) still takes precedence when set.
 
 ## Display Layout
 
@@ -133,16 +134,17 @@ All fields at maximum width:
 
 ![All fields](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-simulation.png)
 
-The status line renders up to 6 lines — each constrained to 80 visible columns:
+The status line renders up to 7 lines — each constrained to 80 visible columns:
 
 | Line | Content                                                                                           |
 | ---- | ------------------------------------------------------------------------------------------------- |
-| 1    | Version, sandbox mode, session name and ID                                                        |
-| 2    | Model name, effort level, context usage bar with percentage, last updated time                    |
-| 3    | Token counts (in/out), cache hit %, cost, session/API duration, lines added/removed, 200K warning |
-| 4    | Project directory, git branch, dirty flag, worktree indicator, diff vs main                       |
-| 5    | Current working directory (only when different from project root)                                 |
-| 6    | Rate limit usage — current (5h) and weekly (7d) with reset times                                  |
+| 1    | Version banner: Claude Code and Statusline versions, plus `→ vX.Y.Z` per target when check is on  |
+| 2    | Sandbox mode, session name and ID                                                                 |
+| 3    | Model name, effort level, context usage bar with percentage, last updated time                    |
+| 4    | Token counts (in/out), cache hit %, cost, session/API duration, lines added/removed, 200K warning |
+| 5    | Project directory, git branch, dirty flag, worktree indicator, diff vs main                       |
+| 6    | Current working directory (only when different from project root)                                 |
+| 7    | Rate limit usage — current (5h) and weekly (7d) with reset times                                  |
 
 ### Color Zones
 
