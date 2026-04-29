@@ -128,6 +128,11 @@ Plugin slash command（等效）：
 
 兩者皆寫入 `~/.claude/claude-code-statusline.json` 的 `updateCheck` 鍵。設定 `CLAUDE_STATUSLINE_UPDATE_CHECK`（`1` 或 `true` 啟用兩項檢查；其他值則停用）時仍會優先採用環境變數。
 
+當指示器出現新版本時，依當初安裝方式升級：
+
+- **npm** — `npm install -g @z80020100/claude-code-statusline@latest`。
+- **Claude Code plugin** — `claude plugin update claude-code-statusline@claude-code-statusline` 並重新啟動 Claude Code。
+
 ## 顯示配置
 
 所有欄位最大寬度的呈現：

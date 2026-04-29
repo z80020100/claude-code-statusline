@@ -128,6 +128,11 @@ Plugin slash command (equivalent):
 
 Both write `~/.claude/claude-code-statusline.json` under the `updateCheck` key. `CLAUDE_STATUSLINE_UPDATE_CHECK` (`1` or `true` to enable both checks, otherwise disable) still takes precedence when set.
 
+When the indicator surfaces a newer release, upgrade through the path you used to install:
+
+- **npm** — `npm install -g @z80020100/claude-code-statusline@latest`.
+- **Claude Code plugin** — `claude plugin update claude-code-statusline@claude-code-statusline` and restart Claude Code.
+
 ## Display Layout
 
 All fields at maximum width:
