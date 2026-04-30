@@ -95,22 +95,61 @@ claude-code-statusline icons unicode  # Unicode アイコンを使用
 
 両方とも `~/.claude/claude-code-statusline.json` に書き込みます。`CLAUDE_STATUSLINE_ICONS` を設定している場合は環境変数が優先されます。
 
+## アップデートチェック
+
+バナー行には Claude Code と Statusline の現在のバージョンが常に表示されます。アップデートチェックを有効化すると、npm の `latest` タグが新しい場合のみ各バージョンの右に `→ vX.Y.Z` が追加されます。両方のチェックはデフォルトで無効で、デタッチドのバックグラウンドプロセスで最大 1 時間に 1 回実行され、結果は `~/.claude/.cache/` にキャッシュされます。
+
+- **Claude Code アップデートチェック** — `@anthropic-ai/claude-code` を監視。
+- **Statusline セルフアップデートチェック** — `@z80020100/claude-code-statusline` を監視。
+
+CLI：
+
+```sh
+claude-code-statusline update-check                  # 両方の状態を表示
+claude-code-statusline update-check on               # 両方を有効化
+claude-code-statusline update-check off              # 両方を無効化
+claude-code-statusline update-check claude on        # Claude Code チェックを有効化
+claude-code-statusline update-check claude off       # Claude Code チェックを無効化
+claude-code-statusline update-check statusline on    # statusline セルフチェックを有効化
+claude-code-statusline update-check statusline off   # statusline セルフチェックを無効化
+```
+
+プラグインのスラッシュコマンド（同等）：
+
+```
+/claude-code-statusline:update-check
+/claude-code-statusline:update-check on
+/claude-code-statusline:update-check off
+/claude-code-statusline:update-check claude on
+/claude-code-statusline:update-check claude off
+/claude-code-statusline:update-check statusline on
+/claude-code-statusline:update-check statusline off
+```
+
+両方とも `~/.claude/claude-code-statusline.json` の `updateCheck` キーに書き込みます。`CLAUDE_STATUSLINE_UPDATE_CHECK`（`1` または `true` で両方を有効化、それ以外は無効化）を設定している場合は環境変数が優先されます。
+
+インジケーターが新しいバージョンを通知したら、インストールした経路で更新してください：
+
+- **npm** — `npm install -g @z80020100/claude-code-statusline@latest`。
+- **Claude Code プラグイン** — `claude plugin update claude-code-statusline@claude-code-statusline` を実行し、Claude Code を再起動してください。
+
 ## 表示レイアウト
 
 全フィールドを最大幅で表示した場合：
 
 ![全フィールド](assets/claude-code-statusline-simulation.png)
 
-ステータスラインは最大6行で表示されます — 各行は80文字以内に制限されます：
+ステータスラインは最大7行で表示されます — 各行は80文字以内に制限されます：
 
 | 行  | 内容                                                                                             |
 | --- | ------------------------------------------------------------------------------------------------ |
-| 1   | バージョン、sandbox モード、セッション名と ID                                                    |
-| 2   | モデル名、effort レベル、コンテキスト使用量バーとパーセンテージ、最終更新時刻                    |
-| 3   | トークン数 (入力/出力)、キャッシュヒット率、コスト、セッション/API 所要時間、増減行数、200K 警告 |
-| 4   | プロジェクトディレクトリ、git ブランチ、変更フラグ、worktree インジケーター、main との差分       |
-| 5   | 現在の作業ディレクトリ（プロジェクトルートと異なる場合のみ表示）                                 |
-| 6   | レート制限 — 現在 (5h) と週間 (7d) の使用量およびリセット時刻                                    |
+| 1   | バージョンバナー：Claude Code と Statusline の両バージョン、各チェック有効時に `→ vX.Y.Z` を併記 |
+| 2   | Sandbox モード、セッション名と ID                                                                |
+| 3   | モデル名、effort レベル、コンテキスト使用量バーとパーセンテージ、最終更新時刻                    |
+| 4   | トークン数 (入力/出力)、キャッシュヒット率、コスト、セッション/API 所要時間、増減行数、200K 警告 |
+| 5   | プロジェクトディレクトリ、git ブランチ、変更フラグ、worktree インジケーター、main との差分       |
+| 6   | 現在の作業ディレクトリ（プロジェクトルートと異なる場合のみ表示）                                 |
+| 7   | レート制限 — 現在 (5h) と週間 (7d) の使用量およびリセット時刻                                    |
 
 ### カラーゾーン
 

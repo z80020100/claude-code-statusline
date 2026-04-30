@@ -13,6 +13,7 @@ const path = require("path");
 
 const CLI = path.join(__dirname, "..", "bin", "claude-code-statusline.js");
 const PKG = require("../package.json");
+const { writeCache } = require("../lib/update-check.js");
 
 let failed = 0;
 
@@ -75,6 +76,10 @@ test("--help prints complete help output", () => {
   assert(out.includes(PKG.description), "missing description");
   assert(out.includes("Usage:"), "missing Usage:");
   assert(out.includes("claude-code-statusline icons"), "missing icons command");
+  assert(
+    out.includes("claude-code-statusline update-check"),
+    "missing update-check command",
+  );
   assert(out.includes(PKG.author), "missing author");
   assert(out.includes(PKG.license), "missing license");
 });
@@ -484,11 +489,16 @@ test("setup omits PATH warning when binary is reachable", () => {
 const NERD_CLOCK = "\uf017";
 const UNICODE_CLOCK = "\u25F7";
 const RENDER_INPUT = JSON.stringify({ model: { display_name: "T" } });
+const VERSIONED_INPUT = JSON.stringify({
+  model: { display_name: "T" },
+  version: "2.1.95",
+});
 
 function cleanEnv(extra) {
   const env = { ...process.env };
   delete env.CLAUDE_STATUSLINE_ICONS;
   delete env.CLAUDE_CODE_EFFORT_LEVEL;
+  delete env.CLAUDE_STATUSLINE_UPDATE_CHECK;
   return { ...env, ...extra };
 }
 
@@ -499,6 +509,10 @@ function seedConfig(tmp, data) {
     path.join(dir, "claude-code-statusline.json"),
     JSON.stringify(data) + "\n",
   );
+}
+
+function seedUpdateCache(tmp, target, data) {
+  writeCache(data, tmp, target);
 }
 
 test("icons defaults to unicode when nothing is configured", () => {
@@ -666,6 +680,354 @@ test("icons invalid value falls back to unicode default", () => {
     });
     assert(out.includes(UNICODE_CLOCK), "expected unicode clock");
     assert(!out.includes(NERD_CLOCK), "unexpected nerd clock");
+  });
+});
+
+// ── Claude Code update check ─────────────────────────
+
+test("Claude Code update check disabled by default", () => {
+  withTmpHome((tmp) => {
+    seedUpdateCache(tmp, "claude", {
+      checkedAt: Date.now(),
+      current: "2.1.95",
+      latest: "999.0.0",
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(
+      !stripAnsi(out).includes("→ v999.0.0"),
+      `unexpected update indicator when disabled: ${out}`,
+    );
+  });
+});
+
+test("Claude Code update check shows indicator when env enabled and cache newer", () => {
+  withTmpHome((tmp) => {
+    seedUpdateCache(tmp, "claude", {
+      checkedAt: Date.now(),
+      current: "2.1.95",
+      latest: "999.0.0",
+      ok: true,
+    });
+    // CLAUDE_STATUSLINE_UPDATE_CHECK enables every target; seed the
+    // statusline cache fresh so peekUpdate stays cache-fresh and avoids spawning.
+    seedUpdateCache(tmp, "statusline", {
+      checkedAt: Date.now(),
+      current: PKG.version,
+      latest: PKG.version,
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp, CLAUDE_STATUSLINE_UPDATE_CHECK: "1" }),
+    });
+    assert(
+      stripAnsi(out).includes("→ v999.0.0"),
+      `expected "→ v999.0.0" in first line: ${out}`,
+    );
+  });
+});
+
+test("Claude Code update check hides indicator when latest equals current", () => {
+  withTmpHome((tmp) => {
+    seedUpdateCache(tmp, "claude", {
+      checkedAt: Date.now(),
+      current: "2.1.95",
+      latest: "2.1.95",
+      ok: true,
+    });
+    seedUpdateCache(tmp, "statusline", {
+      checkedAt: Date.now(),
+      current: PKG.version,
+      latest: PKG.version,
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp, CLAUDE_STATUSLINE_UPDATE_CHECK: "1" }),
+    });
+    assert(
+      !stripAnsi(out).includes("→ v2.1.95"),
+      `unexpected indicator when up-to-date: ${out}`,
+    );
+  });
+});
+
+// ── Statusline self-update check ─────────────────────
+
+test("statusline version always shows in banner", () => {
+  withTmpHome((tmp) => {
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(
+      stripAnsi(out).includes(`Statusline v${PKG.version}`),
+      `expected Statusline version always shown: ${out}`,
+    );
+  });
+});
+
+test("statusline self-update arrow stays hidden when check is off", () => {
+  withTmpHome((tmp) => {
+    seedUpdateCache(tmp, "statusline", {
+      checkedAt: Date.now(),
+      current: PKG.version,
+      latest: "999.0.0",
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const plain = stripAnsi(out);
+    assert(
+      !plain.includes("→ v999.0.0"),
+      `unexpected arrow when check disabled: ${out}`,
+    );
+    assert(
+      plain.includes(`Statusline v${PKG.version}`),
+      `expected Statusline version still shown: ${out}`,
+    );
+  });
+});
+
+test("statusline self-update arrow shows when check enabled and cache newer", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { updateCheck: { statusline: true } });
+    seedUpdateCache(tmp, "statusline", {
+      checkedAt: Date.now(),
+      current: PKG.version,
+      latest: "999.0.0",
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(
+      stripAnsi(out).includes(`Statusline v${PKG.version} → v999.0.0`),
+      `expected statusline arrow: ${out}`,
+    );
+  });
+});
+
+// ── Layout (banner / env line) ───────────────────────
+
+test("version banner always shows both Claude Code and Statusline versions", () => {
+  withTmpHome((tmp) => {
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const lines = stripAnsi(out).split("\n");
+    assert(
+      lines[0].includes("Claude Code v2.1.95"),
+      `expected Claude Code on line 1: ${out}`,
+    );
+    assert(
+      lines[0].includes(`Statusline v${PKG.version}`),
+      `expected Statusline on line 1: ${out}`,
+    );
+    assert(
+      !lines[0].includes("Sandbox"),
+      `Sandbox should not be on the banner line: ${out}`,
+    );
+    assert(lines[1].includes("Sandbox"), `expected Sandbox on line 2: ${out}`);
+  });
+});
+
+test("env line shows Sandbox label with state word", () => {
+  withTmpHome((tmp) => {
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const plain = stripAnsi(out);
+    assert(plain.includes("Sandbox"), `expected "Sandbox" label: ${out}`);
+    assert(
+      /Sandbox.+(off|on|auto)/.test(plain),
+      `expected Sandbox state word: ${out}`,
+    );
+  });
+});
+
+test("banner and env line are suppressed when version is missing", () => {
+  withTmpHome((tmp) => {
+    const out = run([], {
+      input: JSON.stringify({ model: { display_name: "T" } }),
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const plain = stripAnsi(out);
+    assert(
+      !plain.includes("Sandbox"),
+      `unexpected env line without version: ${out}`,
+    );
+    assert(
+      !plain.includes("✻"),
+      `unexpected banner glyph without version: ${out}`,
+    );
+  });
+});
+
+// ── update-check CLI command ─────────────────────────
+
+test("update-check command reports all targets off by default", () => {
+  withTmpHome((tmp) => {
+    const out = run(["update-check"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(out.includes("Current update check:"), "missing header");
+    assert(out.includes("claude: off"), "missing claude state");
+    assert(
+      out.includes(path.join(tmp, ".claude", "claude-code-statusline.json")),
+      "missing config path",
+    );
+  });
+});
+
+test("update-check claude reports single target state", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { updateCheck: { claude: true } });
+    const out = run(["update-check", "claude"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    assert(out.includes("claude: on"), "missing claude on state");
+  });
+});
+
+test("update-check claude on enables the target", () => {
+  withTmpHome((tmp) => {
+    const out = run(["update-check", "claude", "on"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(
+      out.includes("Set claude update check to on"),
+      "missing set message",
+    );
+    assert(cfg.updateCheck?.claude === true, "claude not enabled");
+  });
+});
+
+test("update-check claude off disables the target", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { updateCheck: { claude: true } });
+    const out = run(["update-check", "claude", "off"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(
+      out.includes("Set claude update check to off"),
+      "missing set message",
+    );
+    assert(cfg.updateCheck?.claude === false, "claude not disabled");
+  });
+});
+
+test("update-check on enables both checks", () => {
+  withTmpHome((tmp) => {
+    const out = run(["update-check", "on"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(out.includes("Set both update checks to on"), "missing set message");
+    assert(cfg.updateCheck?.claude === true, "claude not enabled");
+    assert(cfg.updateCheck?.statusline === true, "statusline not enabled");
+  });
+});
+
+test("update-check off disables both checks", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { updateCheck: { claude: true, statusline: true } });
+    run(["update-check", "off"], { env: cleanEnv({ HOME: tmp }) });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.updateCheck?.claude === false, "claude not disabled");
+    assert(cfg.updateCheck?.statusline === false, "statusline not disabled");
+  });
+});
+
+test("update-check command preserves existing config keys", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { icons: "nerd" });
+    run(["update-check", "claude", "on"], {
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.updateCheck?.claude === true, "claude not set");
+    assert(cfg.icons === "nerd", "existing key lost");
+  });
+});
+
+test("update-check rejects invalid target", () => {
+  withTmpHome((tmp) => {
+    try {
+      run(["update-check", "bogus", "on"], {
+        env: cleanEnv({ HOME: tmp }),
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+      throw new Error("expected command to fail");
+    } catch (err) {
+      assert(err.status === 1, "expected exit code 1");
+      assert(
+        err.stderr.includes('Invalid target "bogus"'),
+        "missing invalid target message",
+      );
+    }
+  });
+});
+
+test("update-check rejects invalid value", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { updateCheck: { claude: true } });
+    try {
+      run(["update-check", "claude", "yes"], {
+        env: cleanEnv({ HOME: tmp }),
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+      throw new Error("expected command to fail");
+    } catch (err) {
+      assert(err.status === 1, "expected exit code 1");
+      assert(
+        err.stderr.includes('Expected "on" or "off".'),
+        "missing invalid value message",
+      );
+    }
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.updateCheck?.claude === true, "config should not change");
   });
 });
 

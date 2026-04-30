@@ -95,22 +95,61 @@ Plugin slash command（等效）：
 
 兩者皆寫入 `~/.claude/claude-code-statusline.json`。設定 `CLAUDE_STATUSLINE_ICONS` 時仍會優先採用環境變數。
 
+## 更新檢查
+
+橫幅行始終顯示 Claude Code 和 Statusline 兩者目前的版本。更新檢查只控制每個版本後是否出現 `→ vX.Y.Z` 提示（當 npm `latest` 標籤比執行中版本新時）。兩項檢查預設皆為關閉，分別在分離的背景程序中執行每小時至多一次，結果快取於 `~/.claude/.cache/`。
+
+- **Claude Code 更新檢查** — 監看 `@anthropic-ai/claude-code`。
+- **Statusline 自我更新檢查** — 監看 `@z80020100/claude-code-statusline`。
+
+CLI：
+
+```sh
+claude-code-statusline update-check                  # 顯示兩項狀態
+claude-code-statusline update-check on               # 同時啟用兩項
+claude-code-statusline update-check off              # 同時停用兩項
+claude-code-statusline update-check claude on        # 啟用 Claude Code 檢查
+claude-code-statusline update-check claude off       # 停用 Claude Code 檢查
+claude-code-statusline update-check statusline on    # 啟用 statusline 自我檢查
+claude-code-statusline update-check statusline off   # 停用 statusline 自我檢查
+```
+
+Plugin slash command（等效）：
+
+```
+/claude-code-statusline:update-check
+/claude-code-statusline:update-check on
+/claude-code-statusline:update-check off
+/claude-code-statusline:update-check claude on
+/claude-code-statusline:update-check claude off
+/claude-code-statusline:update-check statusline on
+/claude-code-statusline:update-check statusline off
+```
+
+兩者皆寫入 `~/.claude/claude-code-statusline.json` 的 `updateCheck` 鍵。設定 `CLAUDE_STATUSLINE_UPDATE_CHECK`（`1` 或 `true` 啟用兩項檢查；其他值則停用）時仍會優先採用環境變數。
+
+當指示器出現新版本時，依當初安裝方式升級：
+
+- **npm** — `npm install -g @z80020100/claude-code-statusline@latest`。
+- **Claude Code plugin** — `claude plugin update claude-code-statusline@claude-code-statusline` 並重新啟動 Claude Code。
+
 ## 顯示配置
 
 所有欄位最大寬度的呈現：
 
 ![所有欄位](assets/claude-code-statusline-simulation.png)
 
-狀態列最多顯示 6 行 — 每行限制在 80 個可見字元內：
+狀態列最多顯示 7 行 — 每行限制在 80 個可見字元內：
 
-| 行  | 內容                                                                              |
-| --- | --------------------------------------------------------------------------------- |
-| 1   | 版本、sandbox 模式、session 名稱和 ID                                             |
-| 2   | 模型名稱、effort 等級、上下文使用量條與百分比、最後更新時間                       |
-| 3   | Token 數 (輸入/輸出)、快取命中率、費用、session/API 持續時間、增減行數、200K 警告 |
-| 4   | 專案目錄、git 分支、修改標記、worktree 指示器、與 main 的差異                     |
-| 5   | 目前工作目錄（僅在與專案根目錄不同時顯示）                                        |
-| 6   | 速率限制 — 當前 (5h) 和每週 (7d) 使用量及重置時間                                 |
+| 行  | 內容                                                                                |
+| --- | ----------------------------------------------------------------------------------- |
+| 1   | 版本橫幅：Claude Code 與 Statusline 兩者版本，各檢查啟用時於對應版本後加 `→ vX.Y.Z` |
+| 2   | Sandbox 模式、session 名稱和 ID                                                     |
+| 3   | 模型名稱、effort 等級、上下文使用量條與百分比、最後更新時間                         |
+| 4   | Token 數 (輸入/輸出)、快取命中率、費用、session/API 持續時間、增減行數、200K 警告   |
+| 5   | 專案目錄、git 分支、修改標記、worktree 指示器、與 main 的差異                       |
+| 6   | 目前工作目錄（僅在與專案根目錄不同時顯示）                                          |
+| 7   | 速率限制 — 當前 (5h) 和每週 (7d) 使用量及重置時間                                   |
 
 ### 色彩區間
 
