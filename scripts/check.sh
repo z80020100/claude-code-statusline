@@ -57,9 +57,9 @@ if [[ "${PLUGIN_PRESENT}" == "yes" ]]; then
     [[ -n "${PLUGIN_VERSION}" ]] && echo "  Version: ${PLUGIN_VERSION}"
 fi
 if [[ -f "${STORED_VERSION}" ]]; then
-    echo "  Stored installed-version: $(cat "${STORED_VERSION}")"
+    echo "  Plugin-installed CLI version: $(cat "${STORED_VERSION}")"
 else
-    echo "  Stored installed-version: (not present)"
+    echo "  Plugin-installed CLI version: (not present)"
 fi
 if marketplace_added; then
     echo "  Marketplace: registered"
