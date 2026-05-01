@@ -71,7 +71,7 @@
       "shfmt -i 4 -w"
     ],
     "scripts/*.sh": [
-      "shellcheck",
+      "shellcheck -x",
       "shfmt -i 4 -w"
     ]
   }
