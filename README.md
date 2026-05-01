@@ -4,50 +4,32 @@
 
 [English](https://github.com/z80020100/claude-code-statusline/blob/main/README.md) | [繁體中文](https://github.com/z80020100/claude-code-statusline/blob/main/README.zh-TW.md) | [日本語](https://github.com/z80020100/claude-code-statusline/blob/main/README.ja.md)
 
-Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — model info, context usage gradient bar, token stats, cost, git status, and rate limits.
+Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — model info, context usage gradient bar, token stats, cost, git status, and usage limits.
 
 ![Demo](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-demo.png)
 
-## Features
+## Inside Claude Code
+
+![Inside Claude Code](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-overview.png)
+
+## User Guide
+
+### Features
 
 - **Context usage gradient bar** — 4-zone color spectrum from green to red
 - **Token and cost tracking** — input/output tokens, cache hit ratio, session cost
 - **Session timing** — wall-clock and API duration side by side
 - **Git integration** — branch, dirty flag, worktree indicator, diff stats vs main
-- **Rate limit monitoring** — current (5h) and weekly (7d) usage with reset times
+- **Usage limit monitoring** — current (5h) and weekly (7d) usage with reset times
 - **Sandbox indicator** — shows whether sandbox mode is off, on, or auto
 - **Path compression** — long paths auto-shorten to fit within 80 columns
 - **Zero runtime dependencies** — Node.js built-ins only
 
-## Installation
+### Installation
 
-Two equivalent paths — pick one. Both write a `statusLine` entry to `~/.claude/settings.json`.
+The Claude Code plugin is the recommended path. The npm install is an alternative. Both write the same `statusLine` entry to `~/.claude/settings.json`.
 
-### npm
-
-```sh
-npm install -g @z80020100/claude-code-statusline
-claude-code-statusline setup
-```
-
-This writes `command: "claude-code-statusline"` (relies on PATH):
-
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "claude-code-statusline"
-  }
-}
-```
-
-To remove:
-
-```sh
-claude-code-statusline setup --uninstall
-```
-
-### Claude Code plugin
+#### Claude Code plugin (recommended)
 
 ```sh
 claude plugin marketplace add z80020100/claude-code-statusline
@@ -73,19 +55,35 @@ claude plugin uninstall claude-code-statusline@claude-code-statusline
 claude plugin marketplace remove claude-code-statusline
 ```
 
-## Icon Mode
+#### npm (alternative)
+
+```sh
+npm install -g @z80020100/claude-code-statusline
+claude-code-statusline setup
+```
+
+This writes `command: "claude-code-statusline"` (relies on PATH):
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "claude-code-statusline"
+  }
+}
+```
+
+To remove:
+
+```sh
+claude-code-statusline setup --uninstall
+```
+
+### Icon Mode
 
 Icons default to plain Unicode symbols for broad terminal compatibility.
 
-CLI:
-
-```sh
-claude-code-statusline icons          # show current mode
-claude-code-statusline icons nerd     # use Nerd Font icons
-claude-code-statusline icons unicode  # use Unicode icons
-```
-
-Plugin slash command (equivalent):
+#### Plugin slash command (recommended)
 
 ```
 /claude-code-statusline:icons
@@ -93,28 +91,24 @@ Plugin slash command (equivalent):
 /claude-code-statusline:icons unicode
 ```
 
+#### CLI (alternative)
+
+```sh
+claude-code-statusline icons          # show current mode
+claude-code-statusline icons nerd     # use Nerd Font icons
+claude-code-statusline icons unicode  # use Unicode icons
+```
+
 Both write `~/.claude/claude-code-statusline.json`. `CLAUDE_STATUSLINE_ICONS` still takes precedence when set.
 
-## Update Check
+### Update Check
 
 The banner always shows both Claude Code and Statusline current versions. The update check toggles only control whether `→ vX.Y.Z` appears next to a version when the npm `latest` tag is newer. Both checks are off by default; each runs in a detached background process at most once per hour and caches the result under `~/.claude/.cache/`.
 
 - **Claude Code update check** — watches `@anthropic-ai/claude-code`.
 - **Statusline self-update check** — watches `@z80020100/claude-code-statusline`.
 
-CLI:
-
-```sh
-claude-code-statusline update-check                  # show both states
-claude-code-statusline update-check on               # enable both
-claude-code-statusline update-check off              # disable both
-claude-code-statusline update-check claude on        # enable Claude Code check
-claude-code-statusline update-check claude off       # disable Claude Code check
-claude-code-statusline update-check statusline on    # enable statusline self-check
-claude-code-statusline update-check statusline off   # disable statusline self-check
-```
-
-Plugin slash command (equivalent):
+#### Plugin slash command (recommended)
 
 ```
 /claude-code-statusline:update-check
@@ -126,14 +120,26 @@ Plugin slash command (equivalent):
 /claude-code-statusline:update-check statusline off
 ```
 
+#### CLI (alternative)
+
+```sh
+claude-code-statusline update-check                  # show both states
+claude-code-statusline update-check on               # enable both
+claude-code-statusline update-check off              # disable both
+claude-code-statusline update-check claude on        # enable Claude Code check
+claude-code-statusline update-check claude off       # disable Claude Code check
+claude-code-statusline update-check statusline on    # enable statusline self-check
+claude-code-statusline update-check statusline off   # disable statusline self-check
+```
+
 Both write `~/.claude/claude-code-statusline.json` under the `updateCheck` key. `CLAUDE_STATUSLINE_UPDATE_CHECK` (`1` or `true` to enable both checks, otherwise disable) still takes precedence when set.
 
 When the indicator surfaces a newer release, upgrade through the path you used to install:
 
-- **npm** — `npm install -g @z80020100/claude-code-statusline@latest`.
 - **Claude Code plugin** — `claude plugin update claude-code-statusline@claude-code-statusline` and restart Claude Code.
+- **npm** — `npm install -g @z80020100/claude-code-statusline@latest`.
 
-## Display Layout
+### Display Layout
 
 All fields at maximum width:
 
@@ -149,11 +155,11 @@ The status line renders up to 7 lines — each constrained to 80 visible columns
 | 4    | Token counts (in/out), cache hit %, cost, session/API duration, lines added/removed, 200K warning |
 | 5    | Project directory, git branch, dirty flag, worktree indicator, diff vs main                       |
 | 6    | Current working directory (only when different from project root)                                 |
-| 7    | Rate limit usage — current (5h) and weekly (7d) with reset times                                  |
+| 7    | Usage limits — current (5h) and weekly (7d) with reset times                                      |
 
-### Color Zones
+#### Color Zones
 
-Context and rate limit bars use a 4-zone gradient:
+Context and usage limit bars use a 4-zone gradient:
 
 | Range   | Color | Meaning  |
 | ------- | ----- | -------- |
@@ -162,9 +168,18 @@ Context and rate limit bars use a 4-zone gradient:
 | 70–89%  | Coral | Elevated |
 | 90–100% | Red   | Critical |
 
-## How It Works
+### Requirements
 
-Claude Code pipes a JSON object to the `statusLine` command via stdin on each render cycle. The JSON contains the current session state (model, tokens, cost, workspace, rate limits, etc.). This tool parses it and returns ANSI-colored lines to stdout.
+| Dependency  | Tier 1 (CI-tested)                  | Tier 2 (best-effort) |
+| ----------- | ----------------------------------- | -------------------- |
+| Node.js     | >= 20                               | 18                   |
+| Claude Code | >= 2.1.80 (for `rate_limits` field) |                      |
+
+## Developer Guide
+
+### How It Works
+
+Claude Code pipes a JSON object to the `statusLine` command via stdin on each render cycle. The JSON contains the current session state (model, tokens, cost, workspace, usage limits, etc.). This tool parses it and returns ANSI-colored lines to stdout.
 
 Design decisions:
 
@@ -174,14 +189,7 @@ Design decisions:
 - **80-column constraint** — enforced by automated tests; long paths are compressed automatically
 - **256-color ANSI** — consistent rendering across terminals; Claude brand orange uses 24-bit true color
 
-## Requirements
-
-| Dependency  | Tier 1 (CI-tested)                  | Tier 2 (best-effort) |
-| ----------- | ----------------------------------- | -------------------- |
-| Node.js     | >= 20                               | 18                   |
-| Claude Code | >= 2.1.80 (for `rate_limits` field) |                      |
-
-## Development
+### Development
 
 Dev tooling (ESLint 10, lint-staged 16) requires Node >= 20.19. See `.nvmrc`.
 
