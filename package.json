@@ -1,6 +1,6 @@
 {
   "name": "@z80020100/claude-code-statusline",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Custom status line for Claude Code — model info, context usage gradient bar, token stats, cost, git status, and rate limits",
   "main": "lib/statusline.js",
   "bin": {
