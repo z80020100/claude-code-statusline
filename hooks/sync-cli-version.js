@@ -55,13 +55,6 @@ try {
 
   fs.mkdirSync(dataDir, { recursive: true });
 
-  // First run after install: /claude-code-statusline:setup already ran
-  // `npm install -g`, so the CLI is current. Just record the version and exit.
-  if (!prev) {
-    fs.writeFileSync(stored, current);
-    process.exit(0);
-  }
-
   const child = spawn(
     process.execPath,
     [__filename, INSTALL_ARG, current, stored],

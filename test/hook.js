@@ -8,6 +8,7 @@ const os = require("os");
 const path = require("path");
 
 const HOOK = path.join(__dirname, "..", "hooks", "sync-cli-version.js");
+const PACKAGE_NAME = "@z80020100/claude-code-statusline";
 
 let failed = 0;
 
@@ -72,7 +73,14 @@ function cleanup(root) {
   fs.rmSync(root, { recursive: true, force: true });
 }
 
-test("bootstrap: first run records version and skips npm install", () => {
+function assertNpmInstalled(tree, version) {
+  assert(fs.existsSync(tree.npmLog), "npm should have been invoked");
+  const args = fs.readFileSync(tree.npmLog, "utf8").trim();
+  const expected = `install -g ${PACKAGE_NAME}@${version}`;
+  assert(args === expected, `unexpected npm args: ${args}`);
+}
+
+test("bootstrap: first run installs CLI via npm and records version", () => {
   const tree = makeTree("1.2.3");
   try {
     runHook(tree);
@@ -82,10 +90,7 @@ test("bootstrap: first run records version and skips npm install", () => {
       "utf8",
     );
     assert(stored === "1.2.3", `expected stored 1.2.3, got ${stored}`);
-    assert(
-      !fs.existsSync(tree.npmLog),
-      "npm should not run on first bootstrap",
-    );
+    assertNpmInstalled(tree, "1.2.3");
   } finally {
     cleanup(tree.root);
   }
@@ -119,12 +124,7 @@ test("mismatch: stored version differs triggers npm install of matching version"
       "utf8",
     );
     assert(stored === "1.2.3", `expected stored 1.2.3, got ${stored}`);
-    assert(fs.existsSync(tree.npmLog), "npm should have been invoked");
-    const args = fs.readFileSync(tree.npmLog, "utf8").trim();
-    assert(
-      args === "install -g @z80020100/claude-code-statusline@1.2.3",
-      `unexpected npm args: ${args}`,
-    );
+    assertNpmInstalled(tree, "1.2.3");
   } finally {
     cleanup(tree.root);
   }
