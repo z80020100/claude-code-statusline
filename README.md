@@ -4,7 +4,7 @@
 
 [English](https://github.com/z80020100/claude-code-statusline/blob/main/README.md) | [繁體中文](https://github.com/z80020100/claude-code-statusline/blob/main/README.zh-TW.md) | [日本語](https://github.com/z80020100/claude-code-statusline/blob/main/README.ja.md)
 
-Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — model info, context usage gradient bar, token stats, cost, git status, and rate limits.
+Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — model info, context usage gradient bar, token stats, cost, git status, and usage limits.
 
 ![Demo](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-demo.png)
 
@@ -20,7 +20,7 @@ Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-c
 - **Token and cost tracking** — input/output tokens, cache hit ratio, session cost
 - **Session timing** — wall-clock and API duration side by side
 - **Git integration** — branch, dirty flag, worktree indicator, diff stats vs main
-- **Rate limit monitoring** — current (5h) and weekly (7d) usage with reset times
+- **Usage limit monitoring** — current (5h) and weekly (7d) usage with reset times
 - **Sandbox indicator** — shows whether sandbox mode is off, on, or auto
 - **Path compression** — long paths auto-shorten to fit within 80 columns
 - **Zero runtime dependencies** — Node.js built-ins only
@@ -155,11 +155,11 @@ The status line renders up to 7 lines — each constrained to 80 visible columns
 | 4    | Token counts (in/out), cache hit %, cost, session/API duration, lines added/removed, 200K warning |
 | 5    | Project directory, git branch, dirty flag, worktree indicator, diff vs main                       |
 | 6    | Current working directory (only when different from project root)                                 |
-| 7    | Rate limit usage — current (5h) and weekly (7d) with reset times                                  |
+| 7    | Usage limits — current (5h) and weekly (7d) with reset times                                      |
 
 #### Color Zones
 
-Context and rate limit bars use a 4-zone gradient:
+Context and usage limit bars use a 4-zone gradient:
 
 | Range   | Color | Meaning  |
 | ------- | ----- | -------- |
@@ -179,7 +179,7 @@ Context and rate limit bars use a 4-zone gradient:
 
 ### How It Works
 
-Claude Code pipes a JSON object to the `statusLine` command via stdin on each render cycle. The JSON contains the current session state (model, tokens, cost, workspace, rate limits, etc.). This tool parses it and returns ANSI-colored lines to stdout.
+Claude Code pipes a JSON object to the `statusLine` command via stdin on each render cycle. The JSON contains the current session state (model, tokens, cost, workspace, usage limits, etc.). This tool parses it and returns ANSI-colored lines to stdout.
 
 Design decisions:
 
