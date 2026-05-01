@@ -18,6 +18,18 @@ read_json_field() {
     ' "$1" "$2"
 }
 
+plugin_version() {
+    claude plugin list 2>/dev/null |
+        awk -v id="${PLUGIN_ID}" '
+            $NF == id { found = 1; next }
+            found && /Version:/ {
+                sub(/.*Version:[[:space:]]*/, "")
+                print
+                exit
+            }
+        '
+}
+
 npm_global_version() {
     npm ls -g "${PKG_NAME}" --depth=0 2>/dev/null |
         awk -v pkg="${PKG_NAME}" '
@@ -40,6 +52,10 @@ echo "Installation type: ${INSTALL_TYPE}"
 echo
 echo "[Plugin]"
 echo "  Installed: ${PLUGIN_PRESENT}"
+if [[ "${PLUGIN_PRESENT}" == "yes" ]]; then
+    PLUGIN_VERSION="$(plugin_version)"
+    [[ -n "${PLUGIN_VERSION}" ]] && echo "  Version: ${PLUGIN_VERSION}"
+fi
 if [[ -f "${STORED_VERSION}" ]]; then
     echo "  Stored installed-version: $(cat "${STORED_VERSION}")"
 else
