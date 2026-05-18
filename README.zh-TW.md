@@ -139,6 +139,11 @@ claude-code-statusline update-check statusline off   # 停用 statusline 自我�
 - **Claude Code plugin** — `claude plugin update claude-code-statusline@claude-code-statusline` 並重新啟動 Claude Code。
 - **npm** — `npm install -g @z80020100/claude-code-statusline@latest`。
 
+#### 自動更新（僅限 plugin 安裝方式）
+
+1. 執行 `/plugin` → **Marketplaces** 分頁 → 選 `claude-code-statusline` → 選 **Enable auto-update**。
+2. Claude Code 自動更新 plugin 後須執行 `/clear` 或重啟 Claude Code 才會安裝對應版本的 CLI。
+
 ### 顯示佈局
 
 所有欄位最大寬度的呈現：

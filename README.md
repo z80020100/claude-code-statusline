@@ -139,6 +139,11 @@ When the indicator surfaces a newer release, upgrade through the path you used t
 - **Claude Code plugin** — `claude plugin update claude-code-statusline@claude-code-statusline` and restart Claude Code.
 - **npm** — `npm install -g @z80020100/claude-code-statusline@latest`.
 
+#### Auto-update (plugin only)
+
+1. Run `/plugin` → **Marketplaces** tab → select `claude-code-statusline` → choose **Enable auto-update**.
+2. After Claude Code updates the plugin, run `/clear` or restart Claude Code to install the matching CLI version.
+
 ### Display Layout
 
 All fields at maximum width:
