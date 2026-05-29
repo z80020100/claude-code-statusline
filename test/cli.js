@@ -13,6 +13,9 @@ const path = require("path");
 
 const CLI = path.join(__dirname, "..", "bin", "claude-code-statusline.js");
 const PKG = require("../package.json");
+const {
+  writeCache: writeClaudeStatusCache,
+} = require("../lib/claude-status.js");
 const { writeCache } = require("../lib/update-check.js");
 
 let failed = 0;
@@ -43,6 +46,15 @@ function run(args = [], opts = {}) {
 function withTmpHome(fn) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "cli-test-"));
   try {
+    writeClaudeStatusCache(
+      {
+        checkedAt: Date.now(),
+        component: "Claude Code",
+        status: null,
+        ok: false,
+      },
+      tmp,
+    );
     fn(tmp);
   } finally {
     fs.rmSync(tmp, { recursive: true });
@@ -515,6 +527,10 @@ function seedUpdateCache(tmp, target, data) {
   writeCache(data, tmp, target);
 }
 
+function seedClaudeStatusCache(tmp, data) {
+  writeClaudeStatusCache(data, tmp);
+}
+
 test("icons defaults to unicode when nothing is configured", () => {
   withTmpHome((tmp) => {
     const out = run([], {
@@ -851,6 +867,59 @@ test("env line shows Sandbox label with state word", () => {
     assert(
       /Sandbox.+(off|on|auto)/.test(plain),
       `expected Sandbox state word: ${out}`,
+    );
+  });
+});
+
+const LAMP_CASES = [
+  ["operational", "✻"],
+  ["degraded_performance", "◐"],
+  ["partial_outage", "▲"],
+  ["under_maintenance", "■"],
+  ["major_outage", "✘"],
+];
+for (const [status, glyph] of LAMP_CASES) {
+  test(`banner lamp glyph is ${glyph} for ${status}`, () => {
+    withTmpHome((tmp) => {
+      seedClaudeStatusCache(tmp, {
+        checkedAt: Date.now(),
+        component: "Claude Code",
+        status,
+        ok: true,
+      });
+      const out = run([], {
+        input: VERSIONED_INPUT,
+        env: cleanEnv({ HOME: tmp }),
+      });
+      const lines = stripAnsi(out).split("\n");
+      assert(
+        lines[0].startsWith(`${glyph} Claude Code`),
+        `expected ${glyph} lamp for ${status}: ${out}`,
+      );
+    });
+  });
+}
+
+test("banner lamp falls back to ✻ for unknown status and clears env-line text", () => {
+  withTmpHome((tmp) => {
+    seedClaudeStatusCache(tmp, {
+      checkedAt: Date.now(),
+      component: "Claude Code",
+      status: null,
+      ok: false,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const lines = stripAnsi(out).split("\n");
+    assert(
+      lines[0].startsWith("✻ Claude Code"),
+      `expected ✻ fallback for unknown status: ${out}`,
+    );
+    assert(
+      !lines[1].includes("Claude Code"),
+      `component status text should no longer appear on the env line: ${out}`,
     );
   });
 });

@@ -48,6 +48,8 @@ const lines = render(worstCase, {
     claude: { available: true, latest: "9.9.999" },
     statusline: { available: true, latest: "9.9.9" },
   },
+  // Pin the lamp glyph and skip a real status peek/spawn under test.
+  claudeStatus: { status: "major_outage" },
 });
 
 function stripAnsi(str) {
