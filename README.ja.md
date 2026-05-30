@@ -139,6 +139,11 @@ claude-code-statusline update-check statusline off   # statusline セルフチ�
 - **Claude Code プラグイン** — `claude plugin update claude-code-statusline@claude-code-statusline` を実行し、Claude Code を再起動してください。
 - **npm** — `npm install -g @z80020100/claude-code-statusline@latest`。
 
+#### 自動更新（プラグイン経由のみ）
+
+1. `/plugin` を実行 → **Marketplaces** タブ → `claude-code-statusline` を選択 → **Enable auto-update** を選びます。
+2. プラグインが更新された後は `/clear` を実行するか Claude Code を再起動すると対応バージョンの CLI がインストールされます。
+
 ### 表示レイアウト
 
 全フィールドを最大幅で表示した場合：
