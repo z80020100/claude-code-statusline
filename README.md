@@ -21,6 +21,7 @@ Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-c
 - **Session timing** — wall-clock and API duration side by side
 - **Git integration** — branch, dirty flag, worktree indicator, diff stats vs main
 - **Usage limit monitoring** — current (5h) and weekly (7d) usage with reset times
+- **Service health lamp** — the banner glyph signals Claude Code availability (status.claude.com) at a glance
 - **Sandbox indicator** — shows whether sandbox mode is off, on, or auto
 - **Path compression** — long paths auto-shorten to fit within 80 columns
 - **Zero runtime dependencies** — Node.js built-ins only
@@ -154,13 +155,26 @@ The status line renders up to 7 lines — each constrained to 80 visible columns
 
 | Line | Content                                                                                           |
 | ---- | ------------------------------------------------------------------------------------------------- |
-| 1    | Version banner: Claude Code and Statusline versions, plus `→ vX.Y.Z` per target when check is on  |
+| 1    | Status lamp, Claude Code and Statusline versions, plus `→ vX.Y.Z` per target when check is on     |
 | 2    | Sandbox mode, session name and ID                                                                 |
 | 3    | Model name, effort level, context usage bar with percentage, last updated time                    |
 | 4    | Token counts (in/out), cache hit %, cost, session/API duration, lines added/removed, 200K warning |
 | 5    | Project directory, git branch, dirty flag, worktree indicator, diff vs main                       |
 | 6    | Current working directory (only when different from project root)                                 |
 | 7    | Usage limits — current (5h) and weekly (7d) with reset times                                      |
+
+#### Service Health Lamp
+
+The leading glyph on line 1 doubles as a traffic light for the **Claude Code** component on [status.claude.com](https://status.claude.com). The status comes from a detached background process and is cached for 5 minutes; rendering never blocks. Operational and unknown states keep the florette (`✻`); abnormal states change both shape and color.
+
+| Glyph | Color | Service status       | Meaning                               |
+| ----- | ----- | -------------------- | ------------------------------------- |
+| `✻`   | Green | Operational          | All systems normal — safe to use      |
+| `◐`   | Gold  | Degraded Performance | Slower than usual                     |
+| `▲`   | Coral | Partial Outage       | Some functionality affected           |
+| `■`   | Red   | Under Maintenance    | Planned maintenance in progress       |
+| `✘`   | Red   | Major Outage         | Service down                          |
+| `✻`   | Gray  | Unknown              | Not yet checked or unrecognized state |
 
 #### Color Zones
 

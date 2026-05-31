@@ -18,6 +18,11 @@ if (arg === "setup") {
   };
   if (process.argv[5]) opts.home = process.argv[5];
   runBackgroundCheck(opts).catch(() => {});
+} else if (arg === "__claude-status") {
+  const { runBackgroundCheck } = require("../lib/claude-status.js");
+  const opts = {};
+  if (process.argv[3]) opts.home = process.argv[3];
+  runBackgroundCheck(opts).catch(() => {});
 } else if (arg === "--version" || arg === "-v") {
   console.log(require("../package.json").version);
 } else if (arg === "--help" || arg === "-h" || process.stdin.isTTY) {
