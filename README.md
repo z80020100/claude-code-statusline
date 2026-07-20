@@ -21,7 +21,7 @@ Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-c
 - **Session timing** — wall-clock and API duration side by side
 - **Git integration** — branch, dirty flag, worktree indicator, diff stats vs main
 - **Usage limit monitoring** — current (5h) and weekly (7d) usage with reset times
-- **Service health lamp** — the banner glyph signals Claude Code availability (status.claude.com) at a glance
+- **Service health lamp** — the banner glyph signals Claude Code availability (status.claude.com) at a glance; Cmd/Ctrl-click to open it
 - **Sandbox indicator** — shows whether sandbox mode is off, on, or auto
 - **Path compression** — long paths auto-shorten to fit within 80 columns
 - **Zero runtime dependencies** — Node.js built-ins only
@@ -165,7 +165,7 @@ The status line renders up to 7 lines — each constrained to 80 visible columns
 
 #### Service Health Lamp
 
-The leading glyph on line 1 doubles as a traffic light for the **Claude Code** component on [status.claude.com](https://status.claude.com). The status comes from a detached background process and is cached for 5 minutes; rendering never blocks. Operational and unknown states keep the florette (`✻`); abnormal states change both shape and color.
+The leading glyph on line 1 doubles as a traffic light for the **Claude Code** component on [status.claude.com](https://status.claude.com). The status comes from a detached background process and is cached for 5 minutes; rendering never blocks. Operational and unknown states keep the florette (`✻`); abnormal states change both shape and color. The glyph is also an OSC 8 hyperlink — Cmd-click (macOS) or Ctrl-click to open the status page.
 
 | Glyph | Color | Service status       | Meaning                               |
 | ----- | ----- | -------------------- | ------------------------------------- |
