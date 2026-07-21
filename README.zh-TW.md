@@ -21,7 +21,7 @@
 - **Session 計時** — 同時顯示實際時間與 API 回應時間
 - **Git 整合** — 分支名稱、修改標記、worktree 指示器、與 main 的差異統計
 - **使用量限制監控** — 當前 (5h) 和每週 (7d) 使用量及重置時間
-- **服務健康燈號** — banner 開頭符號一眼顯示 Claude Code 可用性 (status.claude.com)
+- **服務健康燈號** — banner 開頭符號一眼顯示 Claude Code 可用性 (status.claude.com);Cmd / Ctrl 點擊即可開啟
 - **Sandbox 指示器** — 顯示 sandbox 模式為關閉、開啟或自動
 - **路徑壓縮** — 長路徑自動縮短以符合 80 欄限制
 - **零執行時期依賴** — 僅使用 Node.js 內建模組
@@ -165,7 +165,7 @@ claude-code-statusline update-check statusline off   # 停用 statusline 自我�
 
 #### 服務健康燈號
 
-第 1 行開頭的符號同時作為 [status.claude.com](https://status.claude.com) 上 **Claude Code** 元件的紅綠燈。狀態由分離的背景程序取得並快取 5 分鐘；渲染永不阻塞。服務正常與狀態未知時維持花飾符號 (`✻`)；異常狀態則同時改變形狀與顏色。
+第 1 行開頭的符號同時作為 [status.claude.com](https://status.claude.com) 上 **Claude Code** 元件的紅綠燈。狀態由分離的背景程序取得並快取 5 分鐘；渲染永不阻塞。服務正常與狀態未知時維持花飾符號 (`✻`)；異常狀態則同時改變形狀與顏色。此符號同時是 OSC 8 超連結;Cmd + 點擊 (macOS) 或 Ctrl + 點擊即可開啟狀態頁。
 
 | 符號 | 顏色 | 服務狀態             | 意義                     |
 | ---- | ---- | -------------------- | ------------------------ |

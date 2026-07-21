@@ -113,7 +113,10 @@ test("stdin with invalid JSON exits silently", () => {
 });
 
 const UNDERLINE = "\x1b[4m";
-const stripAnsi = (s) => s.replace(/\x1b\[[0-9;]*m/g, "");
+const stripAnsi = (s) =>
+  s
+    .replace(/\x1b\]8;;[^\x1b\x07]*(?:\x1b\\|\x07)/g, "")
+    .replace(/\x1b\[[0-9;]*m/g, "");
 
 test("stdin effort.level overrides settings.effortLevel", () => {
   withTmpHome((tmp) => {
@@ -920,6 +923,26 @@ test("banner lamp falls back to ✻ for unknown status and clears env-line text"
     assert(
       !lines[1].includes("Claude Code"),
       `component status text should no longer appear on the env line: ${out}`,
+    );
+  });
+});
+
+test("banner lamp is wrapped in an OSC 8 link to the status page", () => {
+  withTmpHome((tmp) => {
+    seedClaudeStatusCache(tmp, {
+      checkedAt: Date.now(),
+      component: "Claude Code",
+      status: "operational",
+      ok: true,
+    });
+    const out = run([], {
+      input: VERSIONED_INPUT,
+      env: cleanEnv({ HOME: tmp }),
+    });
+    const line0 = out.split("\n")[0];
+    assert(
+      line0.includes("\x1b]8;;https://status.claude.com/\x1b\\✻\x1b]8;;\x1b\\"),
+      `expected OSC 8 hyperlinked lamp on banner: ${JSON.stringify(line0)}`,
     );
   });
 });

@@ -53,7 +53,9 @@ const lines = render(worstCase, {
 });
 
 function stripAnsi(str) {
-  return str.replace(/\x1b\[[0-9;]*m/g, "");
+  return str
+    .replace(/\x1b\]8;;[^\x1b\x07]*(?:\x1b\\|\x07)/g, "")
+    .replace(/\x1b\[[0-9;]*m/g, "");
 }
 
 // Display rendered output
