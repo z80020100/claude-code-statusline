@@ -21,6 +21,7 @@ Custom status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-c
 - **Session timing** — wall-clock and API duration side by side
 - **Git integration** — branch, dirty flag, worktree indicator, diff stats vs main
 - **Usage limit monitoring** — current (5h) and weekly (7d) usage with reset times
+- **Live usage line (opt-in)** — per-model weekly window (e.g. Fable) and extra usage credit spend
 - **Service health lamp** — the banner glyph signals Claude Code availability (status.claude.com) at a glance; Cmd/Ctrl-click to open it
 - **Sandbox indicator** — shows whether sandbox mode is off, on, or auto
 - **Path compression** — long paths auto-shorten to fit within 80 columns
@@ -145,13 +146,35 @@ When the indicator surfaces a newer release, upgrade through the path you used t
 1. Run `/plugin` → **Marketplaces** tab → select `claude-code-statusline` → choose **Enable auto-update**.
 2. After Claude Code updates the plugin, run `/clear` or restart Claude Code to install the matching CLI version.
 
+### Live Usage
+
+An opt-in line 8 shows the per-model weekly window (e.g. Fable) alongside extra usage credit spend (`$used/$limit (%)`). It is off by default. The data comes from the same endpoint the Claude Code `/usage` panel uses. The background refresh reads your Claude Code OAuth credentials (the macOS Keychain or `.credentials.json` under `~/.claude` or `CLAUDE_CONFIG_DIR`) for that single request; the token is never written to disk or logs. The refresh runs in a detached process at most once every 5 minutes and caches only the display fields under `~/.claude/.cache/`; rendering never blocks. Each segment appears only when the account has data for it. On macOS the first background fetch may show a one-time Keychain authorization prompt.
+
+#### Plugin slash command (recommended)
+
+```
+/claude-code-statusline:live-usage
+/claude-code-statusline:live-usage on
+/claude-code-statusline:live-usage off
+```
+
+#### CLI (alternative)
+
+```sh
+claude-code-statusline live-usage        # show state
+claude-code-statusline live-usage on     # enable
+claude-code-statusline live-usage off    # disable
+```
+
+Both write `~/.claude/claude-code-statusline.json` under the `liveUsage` key. `CLAUDE_STATUSLINE_LIVE_USAGE` (`1` or `true` to enable, otherwise disable) still takes precedence when set.
+
 ### Display Layout
 
 All fields at maximum width:
 
 ![All fields](https://raw.githubusercontent.com/z80020100/claude-code-statusline/main/assets/claude-code-statusline-simulation.png)
 
-The status line renders up to 7 lines — each constrained to 80 visible columns:
+The status line renders up to 8 lines — each constrained to 80 visible columns:
 
 | Line | Content                                                                                           |
 | ---- | ------------------------------------------------------------------------------------------------- |
@@ -162,6 +185,7 @@ The status line renders up to 7 lines — each constrained to 80 visible columns
 | 5    | Project directory, git branch, dirty flag, worktree indicator, diff vs main                       |
 | 6    | Current working directory (only when different from project root)                                 |
 | 7    | Usage limits — current (5h) and weekly (7d) with reset times                                      |
+| 8    | Live usage (opt-in) — per-model weekly window and extra usage credit spend                        |
 
 #### Service Health Lamp
 
@@ -178,7 +202,7 @@ The leading glyph on line 1 doubles as a traffic light for the **Claude Code** c
 
 #### Color Zones
 
-Context and usage limit bars use a 4-zone gradient:
+Context, usage limit, and live usage bars use a 4-zone gradient:
 
 | Range   | Color | Meaning  |
 | ------- | ----- | -------- |

@@ -21,6 +21,7 @@
 - **セッションタイミング** — 実時間と API 応答時間を並列表示
 - **Git 連携** — ブランチ名、変更フラグ、worktree インジケーター、main との差分統計
 - **使用量制限モニタリング** — 現在 (5h) と週間 (7d) の使用量およびリセット時刻
+- **ライブ使用量表示（オプトイン）** — モデル別の週間使用量（例: Fable）と extra usage クレジット消費
 - **サービス稼働ランプ** — バナーの記号で Claude Code の可用性を一目で表示 (status.claude.com)。Cmd / Ctrl + クリックで開けます
 - **Sandbox インジケーター** — sandbox モードのオフ、オン、自動を表示
 - **パス圧縮** — 長いパスを自動短縮して80カラムに収める
@@ -145,13 +146,35 @@ claude-code-statusline update-check statusline off   # statusline セルフチ�
 1. `/plugin` を実行 → **Marketplaces** タブ → `claude-code-statusline` を選択 → **Enable auto-update** を選びます。
 2. プラグインが更新された後は `/clear` を実行するか Claude Code を再起動すると対応バージョンの CLI がインストールされます。
 
+### ライブ使用量
+
+オプトインの 8 行目にモデル別の週間使用量（例: Fable）と extra usage クレジット消費（`$使用済み/$上限 (%)`）を表示します。デフォルトでは無効です。データは Claude Code の `/usage` パネルと同じエンドポイントから取得します。バックグラウンド更新はその 1 回のリクエストのためだけに Claude Code の OAuth 認証情報（macOS Keychain または `~/.claude` / `CLAUDE_CONFIG_DIR` 配下の `.credentials.json`）を読み取ります。トークンがディスクやログに書き込まれることはありません。更新は分離したバックグラウンドプロセスで 5 分に 1 回まで実行され、表示用フィールドのみを `~/.claude/.cache/` にキャッシュします。描画をブロックすることはありません。各セグメントはアカウントに対応するデータがある場合のみ表示されます。macOS では初回のバックグラウンド取得時に Keychain の認可プロンプトが一度表示されることがあります。
+
+#### プラグインのスラッシュコマンド（推奨）
+
+```
+/claude-code-statusline:live-usage
+/claude-code-statusline:live-usage on
+/claude-code-statusline:live-usage off
+```
+
+#### CLI（代替）
+
+```sh
+claude-code-statusline live-usage        # 状態を表示
+claude-code-statusline live-usage on     # 有効化
+claude-code-statusline live-usage off    # 無効化
+```
+
+両方とも `~/.claude/claude-code-statusline.json` の `liveUsage` キーに書き込みます。`CLAUDE_STATUSLINE_LIVE_USAGE`（`1` または `true` で有効化、それ以外は無効化）を設定している場合は環境変数が優先されます。
+
 ### 表示レイアウト
 
 全フィールドを最大幅で表示した場合：
 
 ![全フィールド](assets/claude-code-statusline-simulation.png)
 
-ステータスラインは最大7行で表示されます — 各行は80文字以内に制限されます：
+ステータスラインは最大8行で表示されます — 各行は80文字以内に制限されます：
 
 | 行  | 内容                                                                                             |
 | --- | ------------------------------------------------------------------------------------------------ |
@@ -162,6 +185,7 @@ claude-code-statusline update-check statusline off   # statusline セルフチ�
 | 5   | プロジェクトディレクトリ、git ブランチ、変更フラグ、worktree インジケーター、main との差分       |
 | 6   | 現在の作業ディレクトリ（プロジェクトルートと異なる場合のみ表示）                                 |
 | 7   | 使用量制限 — 現在 (5h) と週間 (7d) の使用量およびリセット時刻                                    |
+| 8   | ライブ使用量（オプトイン）— モデル別の週間使用量と extra usage クレジット消費                    |
 
 #### サービス稼働ランプ
 
@@ -178,7 +202,7 @@ claude-code-statusline update-check statusline off   # statusline セルフチ�
 
 #### カラーゾーン
 
-コンテキストと使用量制限のバーは4段階グラデーションを使用します：
+コンテキスト、使用量制限、ライブ使用量のバーは4段階グラデーションを使用します：
 
 | 範囲    | 色       | 意味   |
 | ------- | -------- | ------ |

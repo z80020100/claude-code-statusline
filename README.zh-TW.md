@@ -21,6 +21,7 @@
 - **Session 計時** — 同時顯示實際時間與 API 回應時間
 - **Git 整合** — 分支名稱、修改標記、worktree 指示器、與 main 的差異統計
 - **使用量限制監控** — 當前 (5h) 和每週 (7d) 使用量及重置時間
+- **即時用量顯示（opt-in）** — 各模型每週用量（如 Fable）與 extra usage credit 花費
 - **服務健康燈號** — banner 開頭符號一眼顯示 Claude Code 可用性 (status.claude.com);Cmd / Ctrl 點擊即可開啟
 - **Sandbox 指示器** — 顯示 sandbox 模式為關閉、開啟或自動
 - **路徑壓縮** — 長路徑自動縮短以符合 80 欄限制
@@ -145,13 +146,35 @@ claude-code-statusline update-check statusline off   # 停用 statusline 自我�
 1. 執行 `/plugin` → **Marketplaces** 分頁 → 選 `claude-code-statusline` → 選 **Enable auto-update**。
 2. Claude Code 自動更新 plugin 後須執行 `/clear` 或重啟 Claude Code 才會安裝對應版本的 CLI。
 
+### 即時用量
+
+opt-in 的第 8 行顯示各模型每週用量（如 Fable）與 extra usage credit 花費（`$已用/$上限 (%)`）。預設為關閉。資料來源與 Claude Code `/usage` 面板相同。背景更新會讀取你的 Claude Code OAuth 憑證（macOS Keychain 或 `~/.claude` / `CLAUDE_CONFIG_DIR` 下的 `.credentials.json`）且僅用於該次請求；token 絕不寫入磁碟或日誌。更新在分離的背景程序中執行每 5 分鐘至多一次且僅快取顯示欄位於 `~/.claude/.cache/`；渲染永不阻塞。各區段僅在帳號有對應資料時顯示。macOS 上第一次背景抓取可能出現一次性的 Keychain 授權提示。
+
+#### Plugin slash command（推薦）
+
+```
+/claude-code-statusline:live-usage
+/claude-code-statusline:live-usage on
+/claude-code-statusline:live-usage off
+```
+
+#### CLI（替代方式）
+
+```sh
+claude-code-statusline live-usage        # 顯示狀態
+claude-code-statusline live-usage on     # 啟用
+claude-code-statusline live-usage off    # 停用
+```
+
+兩者皆寫入 `~/.claude/claude-code-statusline.json` 的 `liveUsage` 鍵。設定 `CLAUDE_STATUSLINE_LIVE_USAGE`（`1` 或 `true` 啟用；其他值則停用）時仍會優先採用環境變數。
+
 ### 顯示佈局
 
 所有欄位最大寬度的呈現：
 
 ![所有欄位](assets/claude-code-statusline-simulation.png)
 
-狀態列最多顯示 7 行 — 每行限制在 80 個可見字元內：
+狀態列最多顯示 8 行 — 每行限制在 80 個可見字元內：
 
 | 行  | 內容                                                                                |
 | --- | ----------------------------------------------------------------------------------- |
@@ -162,6 +185,7 @@ claude-code-statusline update-check statusline off   # 停用 statusline 自我�
 | 5   | 專案目錄、git 分支、修改標記、worktree 指示器、與 main 的差異                       |
 | 6   | 目前工作目錄（僅在與專案根目錄不同時顯示）                                          |
 | 7   | 使用量限制 — 當前 (5h) 和每週 (7d) 使用量及重置時間                                 |
+| 8   | 即時用量（opt-in）— 各模型每週用量與 extra usage credit 花費                        |
 
 #### 服務健康燈號
 
@@ -178,7 +202,7 @@ claude-code-statusline update-check statusline off   # 停用 statusline 自我�
 
 #### 色彩區間
 
-上下文和使用量限制的進度條使用 4 段漸層：
+上下文、使用量限制和即時用量的進度條使用 4 段漸層：
 
 | 範圍    | 顏色 | 意義 |
 | ------- | ---- | ---- |
