@@ -25,6 +25,11 @@ if (arg === "setup") {
   const opts = {};
   if (process.argv[3]) opts.home = process.argv[3];
   runBackgroundCheck(opts).catch(() => {});
+} else if (arg === "__live-usage") {
+  const { runBackgroundCheck } = require("../lib/live-usage.js");
+  const opts = {};
+  if (process.argv[3]) opts.home = process.argv[3];
+  runBackgroundCheck(opts).catch(() => {});
 } else if (arg === "--version" || arg === "-v") {
   console.log(require("../package.json").version);
 } else if (arg === "--help" || arg === "-h" || process.stdin.isTTY) {
