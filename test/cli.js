@@ -92,6 +92,10 @@ test("--help prints complete help output", () => {
     out.includes("claude-code-statusline update-check"),
     "missing update-check command",
   );
+  assert(
+    out.includes("claude-code-statusline live-usage"),
+    "missing live-usage command",
+  );
   assert(out.includes(PKG.author), "missing author");
   assert(out.includes(PKG.license), "missing license");
 });
@@ -514,6 +518,7 @@ function cleanEnv(extra) {
   delete env.CLAUDE_STATUSLINE_ICONS;
   delete env.CLAUDE_CODE_EFFORT_LEVEL;
   delete env.CLAUDE_STATUSLINE_UPDATE_CHECK;
+  delete env.CLAUDE_STATUSLINE_LIVE_USAGE;
   return { ...env, ...extra };
 }
 
@@ -1120,6 +1125,80 @@ test("update-check rejects invalid value", () => {
       ),
     );
     assert(cfg.updateCheck?.claude === true, "config should not change");
+  });
+});
+
+// ── live-usage CLI command ───────────────────────────
+
+test("live-usage reports off by default", () => {
+  withTmpHome((tmp) => {
+    const out = run(["live-usage"], { env: cleanEnv({ HOME: tmp }) });
+    assert(out.includes("Current live usage: off"), `unexpected: ${out}`);
+    assert(out.includes("claude-code-statusline.json"), "missing config path");
+  });
+});
+
+test("live-usage on enables the toggle", () => {
+  withTmpHome((tmp) => {
+    const out = run(["live-usage", "on"], { env: cleanEnv({ HOME: tmp }) });
+    assert(out.includes("Set live usage to on"), `unexpected: ${out}`);
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.liveUsage === true, "config not persisted");
+    const show = run(["live-usage"], { env: cleanEnv({ HOME: tmp }) });
+    assert(show.includes("Current live usage: on"), "state not reported");
+  });
+});
+
+test("live-usage off disables the toggle", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { liveUsage: true });
+    const out = run(["live-usage", "off"], { env: cleanEnv({ HOME: tmp }) });
+    assert(out.includes("Set live usage to off"), `unexpected: ${out}`);
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.liveUsage === false, "config not persisted");
+  });
+});
+
+test("live-usage preserves existing config keys", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { icons: "nerd" });
+    run(["live-usage", "on"], { env: cleanEnv({ HOME: tmp }) });
+    const cfg = JSON.parse(
+      fs.readFileSync(
+        path.join(tmp, ".claude", "claude-code-statusline.json"),
+        "utf8",
+      ),
+    );
+    assert(cfg.icons === "nerd", "icons key lost");
+    assert(cfg.liveUsage === true, "liveUsage not set");
+  });
+});
+
+test("live-usage rejects invalid value", () => {
+  withTmpHome((tmp) => {
+    try {
+      run(["live-usage", "yes"], {
+        env: cleanEnv({ HOME: tmp }),
+        stdio: ["pipe", "pipe", "pipe"],
+      });
+      throw new Error("expected command to fail");
+    } catch (err) {
+      assert(err.status === 1, "expected exit code 1");
+      assert(
+        err.stderr.includes('Expected "on" or "off".'),
+        "missing invalid value message",
+      );
+    }
   });
 });
 

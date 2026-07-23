@@ -10,6 +10,8 @@ if (arg === "setup") {
   require("../lib/icons.js").run(process.argv.slice(3));
 } else if (arg === "update-check") {
   require("../lib/update-check.js").run(process.argv.slice(3));
+} else if (arg === "live-usage") {
+  require("../lib/live-usage.js").run(process.argv.slice(3));
 } else if (arg === "__update-check") {
   const { runBackgroundCheck } = require("../lib/update-check.js");
   const opts = {
@@ -45,6 +47,9 @@ Usage:
   claude-code-statusline update-check claude off      Disable Claude Code update check
   claude-code-statusline update-check statusline on   Enable statusline self-update check
   claude-code-statusline update-check statusline off  Disable statusline self-update check
+  claude-code-statusline live-usage                   Show live usage display state
+  claude-code-statusline live-usage on                Enable live usage display
+  claude-code-statusline live-usage off               Disable live usage display
   claude-code-statusline --help                       Show this help message
   claude-code-statusline --version                    Show version
 
