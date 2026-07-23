@@ -17,6 +17,7 @@ const {
   writeCache: writeClaudeStatusCache,
 } = require("../lib/claude-status.js");
 const { writeCache } = require("../lib/update-check.js");
+const { writeCache: writeLiveUsageCache } = require("../lib/live-usage.js");
 
 let failed = 0;
 
@@ -1199,6 +1200,65 @@ test("live-usage rejects invalid value", () => {
         "missing invalid value message",
       );
     }
+  });
+});
+
+// ── live usage render line ───────────────────────────
+
+const LIVE_CACHE = {
+  checkedAt: Date.now(),
+  ok: true,
+  scoped: { label: "Fable", percent: 0, resetsAt: 4070908800 },
+  spend: {
+    usedMinor: 0,
+    limitMinor: 5000,
+    percent: 0,
+    exponent: 2,
+    currency: "USD",
+  },
+};
+
+test("live usage line stays hidden when toggle is off", () => {
+  withTmpHome((tmp) => {
+    writeLiveUsageCache(LIVE_CACHE, tmp);
+    const input = JSON.stringify({ model: { display_name: "M" } });
+    const out = run([], { input, env: cleanEnv({ HOME: tmp }) });
+    assert(!out.includes("Fable"), "unexpected live usage line");
+  });
+});
+
+test("live usage line renders scoped and spend when enabled", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { liveUsage: true });
+    writeLiveUsageCache(LIVE_CACHE, tmp);
+    const input = JSON.stringify({ model: { display_name: "M" } });
+    const out = stripAnsi(run([], { input, env: cleanEnv({ HOME: tmp }) }));
+    assert(out.includes("Fable"), `missing scoped segment: ${out}`);
+    assert(out.includes("0%"), "missing scoped percent");
+    assert(out.includes("$0.00/$50.00 (0%)"), `missing spend segment: ${out}`);
+  });
+});
+
+test("live usage line renders spend segment alone", () => {
+  withTmpHome((tmp) => {
+    seedConfig(tmp, { liveUsage: true });
+    writeLiveUsageCache({ ...LIVE_CACHE, scoped: null }, tmp);
+    const input = JSON.stringify({ model: { display_name: "M" } });
+    const out = stripAnsi(run([], { input, env: cleanEnv({ HOME: tmp }) }));
+    assert(!out.includes("Fable"), "unexpected scoped segment");
+    assert(out.includes("extra"), "missing spend label");
+  });
+});
+
+test("env override enables live usage line without config", () => {
+  withTmpHome((tmp) => {
+    writeLiveUsageCache(LIVE_CACHE, tmp);
+    const input = JSON.stringify({ model: { display_name: "M" } });
+    const out = run([], {
+      input,
+      env: cleanEnv({ HOME: tmp, CLAUDE_STATUSLINE_LIVE_USAGE: "1" }),
+    });
+    assert(out.includes("Fable"), `missing live usage line: ${out}`);
   });
 });
 
