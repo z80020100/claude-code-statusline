@@ -1236,6 +1236,10 @@ test("live usage line renders scoped and spend when enabled", () => {
     assert(out.includes("Fable"), `missing scoped segment: ${out}`);
     assert(out.includes("0%"), "missing scoped percent");
     assert(out.includes("$0.00/$50.00 (0%)"), `missing spend segment: ${out}`);
+    assert(
+      out.includes("0% │ extra"),
+      `scoped segment must not repeat the weekly reset time: ${out}`,
+    );
   });
 });
 
