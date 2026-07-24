@@ -10,6 +10,7 @@ local_files_present() {
     [[ -f "${CONFIG}" ]] ||
         [[ -f "${CACHE_DIR}/update-check-claude.json" ]] ||
         [[ -f "${CACHE_DIR}/update-check-statusline.json" ]] ||
+        [[ -f "${CACHE_DIR}/live-usage.json" ]] ||
         [[ -d "${PLUGIN_DATA_DIR}" ]]
 }
 
@@ -40,6 +41,7 @@ fi
 remove_file "${CONFIG}"
 remove_file "${CACHE_DIR}/update-check-claude.json"
 remove_file "${CACHE_DIR}/update-check-statusline.json"
+remove_file "${CACHE_DIR}/live-usage.json"
 remove_dir "${PLUGIN_DATA_DIR}"
 
 if plugin_installed; then

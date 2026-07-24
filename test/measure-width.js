@@ -50,6 +50,16 @@ const lines = render(worstCase, {
   },
   // Pin the lamp glyph and skip a real status peek/spawn under test.
   claudeStatus: { status: "major_outage" },
+  liveUsage: {
+    scoped: { label: "Fable", percent: 100, resetsAt: crossDayEpoch() },
+    spend: {
+      usedMinor: 100000,
+      limitMinor: 100000,
+      percent: 100,
+      exponent: 2,
+      currency: "USD",
+    },
+  },
 });
 
 function stripAnsi(str) {
